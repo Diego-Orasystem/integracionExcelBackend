@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casos de Uso y Flujos de Prueba - Excel Manager</title>
+    <style>
+        :root {
+            --primary-color: #4a6da7;
+            --secondary-color: #8bb8e8;
+            --accent-color: #e89f3d;
+            --error-color: #e85d3d;
+            --success-color: #46a758;
+            --text-color: #333;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            padding-bottom: 2rem;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        h2 {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+        
+        h3 {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            margin: 1.5rem 0 0.75rem;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .test-case {
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .test-case h4 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .test-case .description {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+        
+        code {
+            background-color: #f0f0f0;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            font-size: 0.85rem;
+        }
+        
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            font-size: 0.85rem;
+        }
+        
+        .note {
+            background-color: #fff8e1;
+            padding: 0.75rem;
+            border-left: 4px solid #ffc107;
+            margin-bottom: 1.5rem;
+        }
+        
+        .note strong {
+            color: #b28704;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .tag {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+        }
+        
+        .tag.backend {
+            background-color: #7986cb;
+        }
+        
+        .tag.frontend {
+            background-color: #4db6ac;
+        }
+        
+        .tag.database {
+            background-color: #ffb74d;
+        }
+        
+        .tag.api {
+            background-color: #ba68c8;
+        }
+        
+        .success {
+            color: var(--success-color);
+        }
+        
+        .error {
+            color: var(--error-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Excel Manager - Plan de Pruebas</h1>
+        <div class="subtitle">Casos de Uso y Flujos de Prueba para validar el MVP</div>
+    </header>
+    
+    <div class="container">
+        <section>
+            <h2>Introducción</h2>
+            <p>Este documento detalla los casos de uso y flujos de prueba necesarios para validar el correcto funcionamiento del MVP del sistema de gestión de archivos Excel, con especial énfasis en la visualización de estado tipo rompecabezas.</p>
+            
+            <div class="note">
+                <p><strong>Nota:</strong> Para ejecutar las pruebas, asegúrese de tener el servidor de prueba en ejecución con:</p>
+                <code>npm run test-server</code>
+                <p>Y de haber cargado los datos de prueba con el script:</p>
+                <code>node src/scripts/test-data-generator.js</code>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Componentes a Probar</h2>
+            
+            <div class="card">
+                <h3>1. Backend</h3>
+                <ul>
+                    <li><span class="tag api">API</span> Endpoints para obtención de datos de estado de archivos</li>
+                    <li><span class="tag api">API</span> Endpoints para métricas de visualización tipo rompecabezas</li>
+                    <li><span class="tag database">DB</span> Modelo de datos extendido para estados de archivos</li>
+                    <li><span class="tag backend">Script</span> Generador de datos de prueba</li>
+                </ul>
+                
+                <h3>2. Frontend</h3>
+                <ul>
+                    <li><span class="tag frontend">UI</span> Componente de visualización tipo rompecabezas</li>
+                    <li><span class="tag frontend">UI</span> Filtros y opciones de agrupación</li>
+                    <li><span class="tag frontend">UI</span> Estadísticas de estado de archivos</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Flujos de Prueba</h2>
+            
+            <div class="test-case">
+                <h4>Flujo 1: Generación y Limpieza de Datos de Prueba</h4>
+                <div class="description">Verificar que el script de generación de datos crea correctamente los elementos necesarios para probar la visualización.</div>
+                
+                <ol>
+                    <li>Ejecutar en la terminal: <code>node src/scripts/test-data-generator.js</code></li>
+                    <li>Verificar en la consola que se han creado:
+                        <ul>
+                            <li>Una empresa de prueba</li>
+                            <li>Un usuario de prueba</li>
+                            <li>Carpetas de prueba (Documentos, Informes, Presentaciones, Datos)</li>
+                            <li>Archivos de prueba con diferentes estados (pendiente, procesando, procesado, error)</li>
+                        </ul>
+                    </li>
+                    <li>Verificar que se han creado los archivos físicos en la carpeta <code>uploads/</code></li>
+                    <li><span class="success">Resultado Esperado:</span> Mensaje de confirmación "Script completado con éxito" y datos creados en la base de datos.</li>
+                </ol>
+            </div>
+            
+            <div class="test-case">
+                <h4>Flujo 2: Servidor de Prueba</h4>
+                <div class="description">Verificar que el servidor de prueba funciona correctamente y expone los endpoints necesarios.</div>
+                
+                <ol>
+                    <li>Iniciar el servidor de prueba: <code>npm run test-server</code></li>
+                    <li>Verificar que el servidor inicia correctamente en el puerto 5002</li>
+                    <li>Acceder en el navegador a <code>http://localhost:5002</code> - debería mostrar un mensaje de bienvenida</li>
+                    <li>Probar el endpoint base de archivos: <code>http://localhost:5002/api/files</code></li>
+                    <li><span class="success">Resultado Esperado:</span> Respuesta JSON con una lista de archivos de prueba.</li>
+                </ol>
+            </div>
+            
+            <div class="test-case">
+                <h4>Flujo 3: Prueba de API de Estado</h4>
+                <div class="description">Verificar que los endpoints de estado de archivos devuelven datos correctos.</div>
+                
+                <ol>
+                    <li>Con el servidor en ejecución, acceder a: <code>http://localhost:5002/api/files/status</code></li>
+                    <li>Verificar que la respuesta contiene estadísticas generales (totalFiles, pendientes, procesando, procesados, errores)</li>
+                    <li>Probar con agrupaciones:
+                        <ul>
+                            <li><code>http://localhost:5002/api/files/status?groupBy=folder</code></li>
+                            <li><code>http://localhost:5002/api/files/status?groupBy=date</code></li>
+                            <li><code>http://localhost:5002/api/files/status?groupBy=type</code></li>
+                        </ul>
+                    </li>
+                    <li>Verificar que cada agrupación muestra los datos organizados según el criterio seleccionado</li>
+                    <li><span class="success">Resultado Esperado:</span> Datos correctamente agrupados para cada tipo de filtro.</li>
+                </ol>
+            </div>
+            
+            <div class="test-case">
+                <h4>Flujo 4: Prueba de API de Métricas</h4>
+                <div class="description">Verificar que el endpoint de métricas proporciona los datos necesarios para la visualización del rompecabezas.</div>
+                
+                <ol>
+                    <li>Con el servidor en ejecución, acceder a: <code>http://localhost:5002/api/files/metrics</code></li>
+                    <li>Verificar que la respuesta contiene:
+                        <ul>
+                            <li>stats: Estadísticas generales</li>
+                            <li>puzzleItems: Datos detallados para cada archivo</li>
+                        </ul>
+                    </li>
+                    <li>Probar con filtros de tiempo:
+                        <ul>
+                            <li><code>http://localhost:5002/api/files/metrics?timeFrame=week</code></li>
+                            <li><code>http://localhost:5002/api/files/metrics?timeFrame=month</code></li>
+                        </ul>
+                    </li>
+                    <li>Verificar que los filtros de tiempo reducen correctamente el conjunto de datos</li>
+                    <li><span class="success">Resultado Esperado:</span> Datos de métricas con estadísticas generales y elementos para el rompecabezas, filtrados por tiempo si se especifica.</li>
+                </ol>
+            </div>
+            
+            <div class="test-case">
+                <h4>Flujo 5: Visualización de Rompecabezas</h4>
+                <div class="description">Verificar que la interfaz de usuario para la visualización de rompecabezas funciona correctamente.</div>
+                
+                <ol>
+                    <li>Abrir en el navegador: <code>test-puzzle-visualization.html</code></li>
+                    <li>Verificar que se cargan las estadísticas y la visualización de rompecabezas</li>
+                    <li>Probar los filtros:
+                        <ul>
+                            <li>Seleccionar diferentes opciones en "groupBy" y verificar que los datos se agrupan correctamente</li>
+                            <li>Seleccionar diferentes opciones en "timeFrame" y verificar que los datos se filtran por tiempo</li>
+                        </ul>
+                    </li>
+                    <li>Hacer clic en un elemento del rompecabezas y verificar que se muestran los detalles</li>
+                    <li>Probar los botones de control de prueba:
+                        <ul>
+                            <li>"Cargar Datos": Debe actualizar la visualización</li>
+                            <li>"Generar Archivos": Simulación de generación de nuevos archivos</li>
+                            <li>"Limpiar Datos": Debe limpiar la visualización</li>
+                        </ul>
+                    </li>
+                    <li><span class="success">Resultado Esperado:</span> Visualización funcional con elementos interactivos y filtros que funcionan correctamente.</li>
+                </ol>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Matriz de Pruebas</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Caso de Prueba</th>
+                        <th>Componente</th>
+                        <th>Prioridad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>TC-01</td>
+                        <td>Generación de datos de prueba</td>
+                        <td><span class="tag backend">Script</span></td>
+                        <td>Alta</td>
+                    </tr>
+                    <tr>
+                        <td>TC-02</td>
+                        <td>API de estado sin agrupación</td>
+                        <td><span class="tag api">API</span></td>
+                        <td>Alta</td>
+                    </tr>
+                    <tr>
+                        <td>TC-03</td>
+                        <td>API de estado agrupada por carpeta</td>
+                        <td><span class="tag api">API</span></td>
+                        <td>Media</td>
+                    </tr>
+                    <tr>
+                        <td>TC-04</td>
+                        <td>API de estado agrupada por fecha</td>
+                        <td><span class="tag api">API</span></td>
+                        <td>Media</td>
+                    </tr>
+                    <tr>
+                        <td>TC-05</td>
+                        <td>API de estado agrupada por tipo</td>
+                        <td><span class="tag api">API</span></td>
+                        <td>Media</td>
+                    </tr>
+                    <tr>
+                        <td>TC-06</td>
+                        <td>API de métricas sin filtro</td>
+                        <td><span class="tag api">API</span></td>
+                        <td>Alta</td>
+                    </tr>
+                    <tr>
+                        <td>TC-07</td>
+                        <td>API de métricas filtrada por semana</td>
+                        <td><span class="tag api">API</span></td>
+                        <td>Media</td>
+                    </tr>
+                    <tr>
+                        <td>TC-08</td>
+                        <td>API de métricas filtrada por mes</td>
+                        <td><span class="tag api">API</span></td>
+                        <td>Media</td>
+                    </tr>
+                    <tr>
+                        <td>TC-09</td>
+                        <td>Visualización de rompecabezas - Carga inicial</td>
+                        <td><span class="tag frontend">UI</span></td>
+                        <td>Alta</td>
+                    </tr>
+                    <tr>
+                        <td>TC-10</td>
+                        <td>Visualización de rompecabezas - Filtros</td>
+                        <td><span class="tag frontend">UI</span></td>
+                        <td>Media</td>
+                    </tr>
+                    <tr>
+                        <td>TC-11</td>
+                        <td>Visualización de rompecabezas - Detalles</td>
+                        <td><span class="tag frontend">UI</span></td>
+                        <td>Baja</td>
+                    </tr>
+                    <tr>
+                        <td>TC-12</td>
+                        <td>Controles de prueba</td>
+                        <td><span class="tag frontend">UI</span></td>
+                        <td>Baja</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <section>
+            <h2>Instrucciones Finales</h2>
+            
+            <div class="card">
+                <h3>Pasos para Ejecutar Todas las Pruebas</h3>
+                <ol>
+                    <li>Iniciar MongoDB (asegurarse de que está corriendo)</li>
+                    <li>Ejecutar el script de generación de datos: <br><code>node src/scripts/test-data-generator.js</code></li>
+                    <li>Iniciar el servidor de prueba: <br><code>npm run test-server</code></li>
+                    <li>Abrir en el navegador la página de prueba de visualización: <br><code>test-puzzle-visualization.html</code></li>
+                    <li>Seguir los flujos de prueba descritos anteriormente</li>
+                </ol>
+                
+                <h3>Verificaciones Adicionales</h3>
+                <ul>
+                    <li>Comprobar que la carga de datos es rápida (menos de 2 segundos)</li>
+                    <li>Verificar que la visualización de rompecabezas es clara y comunica eficazmente el estado de los archivos</li>
+                    <li>Comprobar que los elementos interactivos (filtros, botones, elementos del rompecabezas) respondan correctamente</li>
+                </ul>
+            </div>
+            
+            <div class="note">
+                <p><strong>Importante:</strong> Estas pruebas están diseñadas para validar el MVP. Para una versión de producción, se requerirían pruebas adicionales de rendimiento, seguridad y experiencia de usuario.</p>
+            </div>
+        </section>
+    </div>
+</body>
+</html> 

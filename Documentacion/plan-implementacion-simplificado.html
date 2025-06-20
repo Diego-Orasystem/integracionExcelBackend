@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de Implementación Simplificado - 2 Semanas</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --warning: #f39c12;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px var(--shadow);
+            padding: 2rem;
+        }
+        
+        header {
+            margin-bottom: 2rem;
+            text-align: center;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 1rem;
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        h2 {
+            color: var(--dark);
+            margin: 1.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--light);
+        }
+        
+        h3 {
+            color: var(--primary);
+            margin: 1rem 0 0.5rem;
+        }
+        
+        h4 {
+            color: var(--dark);
+            margin: 1rem 0 0.5rem;
+            font-weight: bold;
+        }
+        
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        .week {
+            background-color: white;
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px var(--shadow);
+        }
+        
+        .week-1 { border-left-color: var(--primary); }
+        .week-2 { border-left-color: var(--secondary); }
+        
+        .week-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--light);
+        }
+        
+        .task {
+            background-color: var(--light);
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .task-day {
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .task-content {
+            flex-grow: 1;
+        }
+        
+        .task-title {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        
+        .prioridad-alta {
+            border-left: 4px solid var(--accent);
+        }
+        
+        .prioridad-media {
+            border-left: 4px solid var(--warning);
+        }
+        
+        .prioridad-baja {
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .entregable {
+            background-color: rgba(52, 152, 219, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 0.5rem 1rem;
+            margin: 1rem 0;
+            border-radius: 3px;
+        }
+        
+        .timeline {
+            display: flex;
+            margin: 2rem 0;
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: var(--light);
+            z-index: 1;
+        }
+        
+        .timeline-item {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .timeline-date {
+            background-color: white;
+            border: 2px solid var(--primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-weight: bold;
+        }
+        
+        .timeline-content {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--light);
+            color: #777;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Plan de Implementación Simplificado</h1>
+            <p>Sistema de Gestión de Roles y Permisos - Plazo: 2 Semanas</p>
+        </header>
+
+        <h2>Enfoque Simplificado</h2>
+        <p>Este plan de implementación acelerado está diseñado para entregar una versión funcional del sistema en solo 2 semanas. Nos enfocaremos en las funcionalidades esenciales para tener un producto mínimo viable (MVP).</p>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-date">D1</div>
+                <div class="timeline-content">Análisis Rápido</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">D3</div>
+                <div class="timeline-content">Diseño Básico</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">D5</div>
+                <div class="timeline-content">Base de Datos</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">D8</div>
+                <div class="timeline-content">Funcionalidades</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">D12</div>
+                <div class="timeline-content">Pruebas</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">D14</div>
+                <div class="timeline-content">Entrega</div>
+            </div>
+        </div>
+
+        <div class="week week-1">
+            <div class="week-header">
+                <h3>Semana 1: Análisis, Diseño e Implementación Básica</h3>
+            </div>
+            
+            <div class="task prioridad-alta">
+                <div class="task-day">1</div>
+                <div class="task-content">
+                    <div class="task-title">Análisis Rápido de Requisitos</div>
+                    <p>Reunión intensiva con stakeholders para identificar funcionalidades esenciales, priorizar roles y permisos, y definir el alcance mínimo viable.</p>
+                </div>
+            </div>
+            
+            <div class="task prioridad-alta">
+                <div class="task-day">2</div>
+                <div class="task-content">
+                    <div class="task-title">Definición de MVP y Matriz de Roles</div>
+                    <p>Crear la matriz simplificada de roles y permisos. Definir solo las áreas y subáreas esenciales. Documentar los requisitos prioritarios.</p>
+                </div>
+            </div>
+            
+            <div class="task prioridad-alta">
+                <div class="task-day">3</div>
+                <div class="task-content">
+                    <div class="task-title">Diseño Simplificado</div>
+                    <p>Diseño simplificado de la arquitectura, modelo de datos básico y wireframes de las interfaces principales.</p>
+                </div>
+            </div>
+            
+            <div class="task prioridad-alta">
+                <div class="task-day">4</div>
+                <div class="task-content">
+                    <div class="task-title">Validación de Diseño y Configuración</div>
+                    <p>Validación rápida del diseño con stakeholders. Configuración del entorno de desarrollo y control de versiones.</p>
+                </div>
+            </div>
+            
+            <div class="task prioridad-alta">
+                <div class="task-day">5</div>
+                <div class="task-content">
+                    <div class="task-title">Implementación de Base de Datos</div>
+                    <p>Creación de la estructura de base de datos. Implementación de tablas para usuarios, roles, permisos, áreas y archivos.</p>
+                </div>
+            </div>
+            
+            <div class="task prioridad-media">
+                <div class="task-day">6</div>
+                <div class="task-content">
+                    <div class="task-title">Desarrollo de Autenticación</div>
+                    <p>Implementación del sistema de autenticación y autorización básica. Desarrollo de registro e inicio de sesión.</p>
+                </div>
+            </div>
+            
+            <div class="task prioridad-media">
+                <div class="task-day">7</div>
+                <div class="task-content">
+                    <div class="task-title">Gestión Básica de Usuarios y Roles</div>
+                    <p>Implementación de la gestión básica de usuarios, asignación de roles y administración de permisos.</p>
+                </div>
+            </div>
+            
+            <div class="entregable">
+                <strong>Entregables Semana 1:</strong> 
+                <ul>
+                    <li>Documento simplificado de requisitos y alcance</li>
+                    <li>Matriz básica de roles y permisos</li>
+                    <li>Modelo de datos implementado</li>
+                    <li>Sistema de autenticación funcional</li>
+                    <li>Gestión básica de usuarios y roles</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="week week-2">
+            <div class="week-header">
+                <h3>Semana 2: Implementación de Funcionalidades, Pruebas y Entrega</h3>
+            </div>
+            
+            <div class="task prioridad-alta">
+                <div class="task-day">8</div>
+                <div class="task-content">
+                    <div class="task-title">Gestión de Áreas y Subáreas</div>
+                    <p>Implementación de la estructura organizacional básica. Creación y administración de áreas y subáreas.</p>
+                </div>
+            </div>
+            
+            <div class="task prioridad-alta">
+                <div class="task-day">9</div>
+                <div class="task-content">
+                    <div class="task-title">Sistema de Archivos Básico</div>
+                    <p>Desarrollo del sistema de gestión de archivos con permisos básicos. Implementación de carga y visualización de archivos.</p>
+                </div>
+            </div>
+            
+            <div class="task prioridad-media">
+                <div class="task-day">10</div>
+                <div class="task-content">
+                    <div class="task-title">Menú Dinámico y Archivos de Ejemplo</div>
+                    <p>Implementación del menú dinámico basado en permisos. Creación de archivos de ejemplo para subáreas.</p>
+                </div>
+            </div>
+            
+            <div class="task prioridad-media">
+                <div class="task-day">11</div>
+                <div class="task-content">
+                    <div class="task-title">Visualización Simplificada de Estado</div>
+                    <p>Desarrollo de una versión básica del gráfico tipo rompecabezas para monitoreo de archivos.</p>
+                </div>
+            </div>
+            
+            <div class="task prioridad-alta">
+                <div class="task-day">12</div>
+                <div class="task-content">
+                    <div class="task-title">Pruebas Integradas</div>
+                    <p>Pruebas del sistema completo. Detección y corrección de errores críticos.</p>
+                </div>
+            </div>
+            
+            <div class="task prioridad-media">
+                <div class="task-day">13</div>
+                <div class="task-content">
+                    <div class="task-title">Documentación Básica y Preparación</div>
+                    <p>Creación de documentación esencial. Preparación para implementación. Verificación final del sistema.</p>
+                </div>
+            </div>
+            
+            <div class="task prioridad-alta">
+                <div class="task-day">14</div>
+                <div class="task-content">
+                    <div class="task-title">Implementación y Capacitación Rápida</div>
+                    <p>Implementación del sistema. Capacitación rápida a usuarios clave y administradores.</p>
+                </div>
+            </div>
+            
+            <div class="entregable">
+                <strong>Entregables Semana 2:</strong> 
+                <ul>
+                    <li>Sistema funcional de gestión de áreas y subáreas</li>
+                    <li>Gestión básica de archivos con permisos</li>
+                    <li>Menú dinámico basado en permisos</li>
+                    <li>Visualización básica del estado de archivos</li>
+                    <li>Documentación esencial para usuarios y administradores</li>
+                    <li>Sistema implementado y funcionando</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>Alcance Reducido (MVP)</h2>
+        <p>Para entregar una versión funcional en 2 semanas, nos enfocaremos en:</p>
+        <ul>
+            <li><strong>Roles Simplificados:</strong> Implementar solo los 3 roles principales sin variaciones complejas</li>
+            <li><strong>Estructura Básica:</strong> Limitar el número de áreas (~10 en lugar de 50) y subáreas para la primera versión</li>
+            <li><strong>Permisos Esenciales:</strong> Implementar solo permisos básicos (lectura/escritura) sin niveles complejos</li>
+            <li><strong>Interfaz Práctica:</strong> Diseño simple pero funcional, sin elementos visuales complejos</li>
+            <li><strong>Archivos:</strong> Gestión básica de archivos con permisos simples</li>
+        </ul>
+
+        <h2>Próximas Iteraciones</h2>
+        <p>Después de la entrega inicial, se pueden implementar en futuras iteraciones:</p>
+        <ul>
+            <li>Refinamiento de roles y permisos con más granularidad</li>
+            <li>Expansión a todas las áreas y subáreas requeridas</li>
+            <li>Mejora de la visualización tipo rompecabezas con más datos y estadísticas</li>
+            <li>Mejoras de interfaz de usuario y experiencia de usuario</li>
+            <li>Implementación de reportes avanzados y notificaciones</li>
+            <li>Ampliación del sistema de archivos con más opciones de gestión</li>
+        </ul>
+
+        <h2>Factores Críticos de Éxito</h2>
+        <ul>
+            <li>Disponibilidad inmediata de stakeholders para toma de decisiones rápidas</li>
+            <li>Priorización estricta de requisitos, enfocándose solo en lo esencial</li>
+            <li>Comunicación constante y clara entre el equipo y los usuarios finales</li>
+            <li>Expectativas alineadas sobre el alcance reducido del MVP</li>
+            <li>Compromiso de todos los involucrados con el cronograma acelerado</li>
+        </ul>
+
+        <h2>Desglose de Actividades por Área</h2>
+        <p>A continuación se detallan las actividades principales, separadas por área, con su orden sugerido, criterios de aceptación y observaciones.</p>
+
+        <h3>1. Análisis y Definición de Requisitos</h3>
+        <ol>
+            <li>
+                <strong>Reunión de Kickoff y Alcance</strong><br>
+                <em>Criterio de aceptación:</em> Todos los participantes comprenden el objetivo y el alcance reducido.<br>
+                <em>Observación:</em> Documentar acuerdos clave y responsables.
+            </li>
+            <li>
+                <strong>Definición de Roles y Permisos Básicos</strong><br>
+                <em>Criterio de aceptación:</em> Matriz de roles y permisos validada por los stakeholders.<br>
+                <em>Observación:</em> Limitar a 3 roles y 2 niveles de permisos (lectura/escritura).
+            </li>
+            <li>
+                <strong>Identificación de Áreas y Subáreas Iniciales</strong><br>
+                <em>Criterio de aceptación:</em> Listado de áreas/subáreas acordado y documentado.<br>
+                <em>Observación:</em> No más de 10 áreas para el MVP.
+            </li>
+        </ol>
+
+        <h3>2. Desarrollo Backend</h3>
+        <ol>
+            <li>
+                <strong>Diseño e Implementación de la Base de Datos</strong><br>
+                <em>Criterio de aceptación:</em> Tablas/colecciones para usuarios, roles, permisos, áreas, subáreas y archivos creadas y funcionales.<br>
+                <em>Observación:</em> Usar migraciones o scripts para facilitar cambios rápidos.
+            </li>
+            <li>
+                <strong>API de Autenticación y Autorización</strong><br>
+                <em>Criterio de aceptación:</em> Registro, login y validación de permisos funcionando.<br>
+                <em>Observación:</em> Probar con usuarios de cada rol.
+            </li>
+            <li>
+                <strong>API de Gestión de Usuarios y Roles</strong><br>
+                <em>Criterio de aceptación:</em> Crear, editar y asignar roles a usuarios desde la API.<br>
+                <em>Observación:</em> Incluir endpoints mínimos para el MVP.
+            </li>
+            <li>
+                <strong>API de Áreas, Subáreas y Archivos</strong><br>
+                <em>Criterio de aceptación:</em> CRUD básico para áreas, subáreas y archivos.<br>
+                <em>Observación:</em> Permitir asignar responsables y subir archivos.
+            </li>
+        </ol>
+
+        <h3>3. Desarrollo Frontend</h3>
+        <ol>
+            <li>
+                <strong>Diseño de Interfaces Básicas</strong><br>
+                <em>Criterio de aceptación:</em> Wireframes o prototipos validados por usuarios clave.<br>
+                <em>Observación:</em> Priorizar usabilidad sobre estética.
+            </li>
+            <li>
+                <strong>Implementación de Login y Menú Dinámico</strong><br>
+                <em>Criterio de aceptación:</em> El menú solo muestra opciones según permisos del usuario.<br>
+                <em>Observación:</em> Probar con cada tipo de usuario.
+            </li>
+            <li>
+                <strong>Pantallas de Gestión de Áreas, Subáreas y Archivos</strong><br>
+                <em>Criterio de aceptación:</em> Se pueden ver, crear y editar áreas/subáreas y subir archivos.<br>
+                <em>Observación:</em> Incluir archivos de ejemplo solo lectura.
+            </li>
+            <li>
+                <strong>Visualización Básica del Estado de Archivos</strong><br>
+                <em>Criterio de aceptación:</em> Gráfico simple (tipo rompecabezas o lista) que muestre archivos pendientes y responsables.<br>
+                <em>Observación:</em> No es necesario que sea visualmente complejo.
+            </li>
+        </ol>
+
+        <h3>4. Pruebas</h3>
+        <ol>
+            <li>
+                <strong>Pruebas de Funcionalidad Crítica</strong><br>
+                <em>Criterio de aceptación:</em> Login, permisos, carga y visualización de archivos funcionan sin errores críticos.<br>
+                <em>Observación:</em> Probar con usuarios de cada rol.
+            </li>
+            <li>
+                <strong>Pruebas de Integración Básica</strong><br>
+                <em>Criterio de aceptación:</em> Flujo completo desde login hasta gestión de archivos y áreas.<br>
+                <em>Observación:</em> Documentar cualquier error y corregir antes de la entrega.
+            </li>
+        </ol>
+
+        <h3>5. Documentación y Capacitación</h3>
+        <ol>
+            <li>
+                <strong>Manual Básico de Usuario y Administrador</strong><br>
+                <em>Criterio de aceptación:</em> Documento breve con capturas de pantalla y pasos principales.<br>
+                <em>Observación:</em> Incluir ejemplos de uso frecuente.
+            </li>
+            <li>
+                <strong>Capacitación Exprés a Usuarios Clave</strong><br>
+                <em>Criterio de aceptación:</em> Usuarios clave pueden realizar las tareas principales sin ayuda.<br>
+                <em>Observación:</em> Hacer una sesión grabada o presencial breve.
+            </li>
+        </ol>
+
+        <h3>Observaciones Generales</h3>
+        <ul>
+            <li>Priorizar siempre lo funcional sobre lo estético o avanzado.</li>
+            <li>Documentar decisiones rápidas y cambios de alcance.</li>
+            <li>Comunicación diaria y revisión de avances al final de cada jornada.</li>
+            <li>Registrar pendientes para próximas iteraciones.</li>
+        </ul>
+
+        <h2>Documentación de la Entrega</h2>
+        <p>Esta sección describe los entregables finales, el procedimiento de entrega, los criterios de aceptación y recomendaciones para el cierre del proyecto.</p>
+
+        <h3>Entregables Finales</h3>
+        <ul>
+            <li><strong>Código fuente</strong> del backend y frontend, versionado en repositorio (GitHub, GitLab, etc.)</li>
+            <li><strong>Base de datos</strong> inicial (script de migración o dump exportado)</li>
+            <li><strong>Manual básico de usuario y administrador</strong> (PDF o documento digital)</li>
+            <li><strong>Documentación técnica</strong> mínima (estructura de carpetas, endpoints principales, instrucciones de despliegue)</li>
+            <li><strong>Video o acta de capacitación</strong> para usuarios clave</li>
+            <li><strong>Lista de pendientes y recomendaciones</strong> para próximas iteraciones</li>
+        </ul>
+
+        <h3>Procedimiento de Entrega</h3>
+        <ol>
+            <li>Revisión conjunta del sistema funcionando en entorno de pruebas o producción</li>
+            <li>Entrega de acceso al repositorio y credenciales de usuario administrador</li>
+            <li>Entrega de manuales y documentación técnica</li>
+            <li>Capacitación exprés a usuarios clave (presencial o remota)</li>
+            <li>Firma de acta de conformidad o aceptación por parte del responsable del cliente</li>
+        </ol>
+
+        <h3>Criterios de Aceptación de la Entrega</h3>
+        <ul>
+            <li>El sistema cumple con el alcance y funcionalidades mínimas acordadas</li>
+            <li>Los usuarios clave pueden realizar las tareas principales sin ayuda</li>
+            <li>No existen errores críticos bloqueantes en el flujo principal</li>
+            <li>La documentación entregada es suficiente para operar y mantener el sistema</li>
+            <li>El cliente valida y acepta formalmente la entrega</li>
+        </ul>
+
+        <h3>Recomendaciones para el Cierre</h3>
+        <ul>
+            <li>Registrar todos los accesos y credenciales entregados</li>
+            <li>Dejar documentados los pasos para restaurar o migrar el sistema</li>
+            <li>Recomendar un periodo de soporte post-entrega (al menos 1 semana)</li>
+            <li>Agendar una reunión de retroalimentación para identificar mejoras futuras</li>
+        </ul>
+
+        <footer>
+            <p>Plan de Implementación Simplificado | Versión MVP - 2 Semanas</p>
+        </footer>
+    </div>
+</body>
+</html> 

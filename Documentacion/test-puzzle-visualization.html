@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Visualización de Rompecabezas - Excel Manager</title>
+    <style>
+        :root {
+            --primary-color: #4a6da7;
+            --secondary-color: #8bb8e8;
+            --accent-color: #e89f3d;
+            --error-color: #e85d3d;
+            --success-color: #46a758;
+            --warning-color: #e8d83d;
+            --text-color: #333;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+        
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            background-color: var(--card-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        select, button {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: white;
+            font-size: 0.9rem;
+        }
+        
+        select:focus, button:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 109, 167, 0.2);
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        button:hover {
+            background-color: #3a5d97;
+        }
+        
+        button.secondary {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        button.secondary:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title .options {
+            font-size: 0.85rem;
+            font-weight: normal;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-title {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .stat-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .stat-indicator.up {
+            color: var(--success-color);
+        }
+        
+        .stat-indicator.down {
+            color: var(--error-color);
+        }
+        
+        .status-legend {
+            display: flex;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .status-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+        
+        .status-color.pendiente {
+            background-color: var(--warning-color);
+        }
+        
+        .status-color.procesando {
+            background-color: var(--secondary-color);
+        }
+        
+        .status-color.procesado {
+            background-color: var(--success-color);
+        }
+        
+        .status-color.error {
+            background-color: var(--error-color);
+        }
+        
+        .test-controls {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+        }
+        
+        .test-controls h3 {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        
+        .test-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--success-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .toast.error {
+            background-color: var(--error-color);
+        }
+        
+        /* Puzzle visualization area */
+        #puzzle-visualization {
+            width: 100%;
+            height: 500px;
+            background-color: var(--card-bg);
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        
+        /* Skeleton loading style */
+        .skeleton {
+            position: relative;
+            overflow: hidden;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+        }
+        
+        .skeleton::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            transform: translateX(-100%);
+            background-image: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0,
+                rgba(255, 255, 255, 0.2) 20%,
+                rgba(255, 255, 255, 0.5) 60%,
+                rgba(255, 255, 255, 0)
+            );
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+        
+        /* Puzzle item styles */
+        .puzzle-item {
+            position: absolute;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .puzzle-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+        
+        .puzzle-item-header {
+            padding: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .puzzle-item-body {
+            padding: 0.5rem;
+            font-size: 0.7rem;
+            flex-grow: 1;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .puzzle-item-footer {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.65rem;
+            background-color: rgba(0, 0, 0, 0.05);
+            text-align: right;
+        }
+        
+        /* Status-specific colors */
+        .puzzle-item.procesado .puzzle-item-header {
+            background-color: var(--success-color);
+        }
+        
+        .puzzle-item.pendiente .puzzle-item-header {
+            background-color: var(--warning-color);
+        }
+        
+        .puzzle-item.procesando .puzzle-item-header {
+            background-color: var(--secondary-color);
+        }
+        
+        .puzzle-item.error .puzzle-item-header {
+            background-color: var(--error-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Excel Manager - Testing</h1>
+        <div class="subtitle">Prueba de Visualización de Estado de Archivos (Rompecabezas)</div>
+    </header>
+    
+    <div class="container">
+        <div class="toolbar">
+            <div class="filter-group">
+                <select id="groupBy">
+                    <option value="">Sin agrupar</option>
+                    <option value="folder">Por Carpeta</option>
+                    <option value="date">Por Fecha</option>
+                    <option value="type">Por Tipo</option>
+                </select>
+                
+                <select id="timeFrame">
+                    <option value="all">Todo el tiempo</option>
+                    <option value="week">Última semana</option>
+                    <option value="month">Último mes</option>
+                </select>
+            </div>
+            
+            <button id="refreshButton">Actualizar</button>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">
+                <span>Estadísticas Generales</span>
+                <div class="options">
+                    <button class="secondary" id="toggleStats">Ocultar</button>
+                </div>
+            </div>
+            
+            <div class="stats-grid" id="statsContainer">
+                <div class="stat-card">
+                    <div class="stat-title">Total Archivos</div>
+                    <div class="stat-value" id="totalFiles">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Procesados</div>
+                    <div class="stat-value" id="procesados">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Pendientes</div>
+                    <div class="stat-value" id="pendientes">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Procesando</div>
+                    <div class="stat-value" id="procesando">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Errores</div>
+                    <div class="stat-value" id="errores">--</div>
+                </div>
+            </div>
+            
+            <div class="status-legend">
+                <div class="status-item">
+                    <div class="status-color pendiente"></div>
+                    <span>Pendientes</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-color procesando"></div>
+                    <span>Procesando</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-color procesado"></div>
+                    <span>Procesados</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-color error"></div>
+                    <span>Errores</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">
+                <span>Visualización de Rompecabezas</span>
+                <div class="options">
+                    <button class="secondary" id="togglePuzzle">Ocultar</button>
+                </div>
+            </div>
+            
+            <div id="puzzle-visualization" class="skeleton">
+                <!-- Puzzle content will be generated here -->
+            </div>
+        </div>
+        
+        <div class="test-controls">
+            <h3>Controles de Prueba</h3>
+            <p>Utilice estos controles para probar diferentes aspectos de la visualización:</p>
+            
+            <div class="test-actions">
+                <button id="testLoadData">Cargar Datos</button>
+                <button id="testGenerateFiles">Generar Archivos</button>
+                <button id="testClearData">Limpiar Datos</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast">Operación completada con éxito</div>
+    
+    <script>
+        // Variables globales
+        let puzzleData = [];
+        let statsData = null;
+        const baseApiUrl = 'http://localhost:5002/api';
+        
+        // Elementos DOM
+        const puzzleContainer = document.getElementById('puzzle-visualization');
+        const groupBySelect = document.getElementById('groupBy');
+        const timeFrameSelect = document.getElementById('timeFrame');
+        const refreshButton = document.getElementById('refreshButton');
+        const testLoadDataButton = document.getElementById('testLoadData');
+        const testGenerateFilesButton = document.getElementById('testGenerateFiles');
+        const testClearDataButton = document.getElementById('testClearData');
+        const toggleStatsButton = document.getElementById('toggleStats');
+        const togglePuzzleButton = document.getElementById('togglePuzzle');
+        const statsContainer = document.getElementById('statsContainer');
+        const toast = document.getElementById('toast');
+        
+        // Mostrar toast de notificación
+        function showToast(message, isError = false) {
+            toast.textContent = message;
+            toast.classList.toggle('error', isError);
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Cargar datos de estado
+        async function loadStatusData() {
+            const groupBy = groupBySelect.value;
+            const url = `${baseApiUrl}/files/status${groupBy ? `?groupBy=${groupBy}` : ''}`;
+            
+            puzzleContainer.classList.add('skeleton');
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    return data.data;
+                } else {
+                    throw new Error(data.error?.message || 'Error al cargar datos');
+                }
+            } catch (error) {
+                showToast(`Error al cargar datos de estado: ${error.message}`, true);
+                return [];
+            }
+        }
+        
+        // Cargar datos de métricas para el rompecabezas
+        async function loadMetricsData() {
+            const timeFrame = timeFrameSelect.value;
+            const url = `${baseApiUrl}/files/metrics${timeFrame !== 'all' ? `?timeFrame=${timeFrame}` : ''}`;
+            
+            puzzleContainer.classList.add('skeleton');
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    return data.data;
+                } else {
+                    throw new Error(data.error?.message || 'Error al cargar métricas');
+                }
+            } catch (error) {
+                showToast(`Error al cargar métricas: ${error.message}`, true);
+                return { stats: null, puzzleItems: [] };
+            }
+        }
+        
+        // Actualizar estadísticas en la UI
+        function updateStats(stats) {
+            if (!stats) return;
+            
+            document.getElementById('totalFiles').textContent = stats.totalFiles || 0;
+            document.getElementById('procesados').textContent = stats.procesados || 0;
+            document.getElementById('pendientes').textContent = stats.pendientes || 0;
+            document.getElementById('procesando').textContent = stats.procesando || 0;
+            document.getElementById('errores').textContent = stats.errores || 0;
+        }
+        
+        // Renderizar visualización de rompecabezas
+        function renderPuzzleVisualization(items) {
+            puzzleContainer.innerHTML = '';
+            puzzleContainer.classList.remove('skeleton');
+            
+            if (!items || items.length === 0) {
+                puzzleContainer.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100%; color: #888;">No hay datos disponibles</div>';
+                return;
+            }
+            
+            // Calcular layout y dimensiones para optimizar el espacio
+            const containerWidth = puzzleContainer.clientWidth;
+            const containerHeight = puzzleContainer.clientHeight;
+            const maxItems = Math.min(items.length, 50); // Limitar a 50 elementos máximo para evitar sobrecarga
+            
+            // Calcular el número óptimo de columnas y filas
+            const ratio = containerWidth / containerHeight;
+            const cols = Math.ceil(Math.sqrt(maxItems * ratio));
+            const rows = Math.ceil(maxItems / cols);
+            
+            // Dimensiones base para los elementos
+            const itemWidth = Math.floor(containerWidth / cols) - 10;
+            const itemHeight = Math.floor(containerHeight / rows) - 10;
+            
+            // Posicionar elementos
+            for (let i = 0; i < maxItems; i++) {
+                const item = items[i];
+                const col = i % cols;
+                const row = Math.floor(i / cols);
+                
+                // Calcular tamaño basado en el "peso" del elemento
+                // Los elementos más importantes (procesados) son más grandes
+                const sizeMultiplier = item.weight || 1;
+                const calculatedWidth = Math.floor(itemWidth * (0.8 + sizeMultiplier * 0.4));
+                const calculatedHeight = Math.floor(itemHeight * (0.8 + sizeMultiplier * 0.4));
+                
+                // Crear el elemento del rompecabezas
+                const puzzleItem = document.createElement('div');
+                puzzleItem.className = `puzzle-item ${item.status || 'pendiente'}`;
+                puzzleItem.id = `puzzle-${item._id}`;
+                puzzleItem.style.width = `${calculatedWidth}px`;
+                puzzleItem.style.height = `${calculatedHeight}px`;
+                
+                // Posicionar con algo de aleatoriedad para efecto orgánico
+                const jitter = 5; // Píxeles de variación aleatoria
+                const left = (col * itemWidth + (itemWidth - calculatedWidth) / 2) + (Math.random() * jitter * 2 - jitter);
+                const top = (row * itemHeight + (itemHeight - calculatedHeight) / 2) + (Math.random() * jitter * 2 - jitter);
+                
+                puzzleItem.style.left = `${left}px`;
+                puzzleItem.style.top = `${top}px`;
+                
+                // Estructura interna
+                puzzleItem.innerHTML = `
+                    <div class="puzzle-item-header">${item.name}</div>
+                    <div class="puzzle-item-body">
+                        <div>Carpeta: ${item.folderName || 'N/A'}</div>
+                        <div>Tamaño: ${formatBytes(item.size)}</div>
+                        ${item.processingTime ? `<div>Tiempo: ${formatTime(item.processingTime)}</div>` : ''}
+                    </div>
+                    <div class="puzzle-item-footer">
+                        ${formatDate(item.createdAt)}
+                    </div>
+                `;
+                
+                // Click para ver detalles
+                puzzleItem.addEventListener('click', () => {
+                    showFileDetails(item);
+                });
+                
+                puzzleContainer.appendChild(puzzleItem);
+            }
+        }
+        
+        // Formatear bytes a formato legible
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+        
+        // Formatear tiempo en milisegundos a formato legible
+        function formatTime(ms) {
+            if (!ms) return 'N/A';
+            
+            const seconds = Math.floor(ms / 1000);
+            if (seconds < 60) {
+                return `${seconds}s`;
+            } else {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                return `${minutes}m ${remainingSeconds}s`;
+            }
+        }
+        
+        // Formatear fecha
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // Mostrar detalles del archivo
+        function showFileDetails(file) {
+            alert(`
+                Detalles del Archivo:
+                Nombre: ${file.name}
+                Estado: ${file.status}
+                Carpeta: ${file.folderName || 'N/A'}
+                Tamaño: ${formatBytes(file.size)}
+                Fecha: ${formatDate(file.createdAt)}
+                ${file.processingTime ? `Tiempo de procesamiento: ${formatTime(file.processingTime)}` : ''}
+            `);
+        }
+        
+        // Cargar todos los datos
+        async function loadAllData() {
+            puzzleContainer.classList.add('skeleton');
+            
+            try {
+                const [metrics] = await Promise.all([
+                    loadMetricsData()
+                ]);
+                
+                // Actualizar variables globales
+                statsData = metrics.stats;
+                puzzleData = metrics.puzzleItems;
+                
+                // Actualizar UI
+                updateStats(statsData);
+                renderPuzzleVisualization(puzzleData);
+                
+                showToast('Datos cargados correctamente');
+            } catch (error) {
+                showToast(`Error al cargar datos: ${error.message}`, true);
+            } finally {
+                puzzleContainer.classList.remove('skeleton');
+            }
+        }
+        
+        // Eventos
+        refreshButton.addEventListener('click', loadAllData);
+        
+        // Controles de prueba
+        testLoadDataButton.addEventListener('click', loadAllData);
+        
+        testGenerateFilesButton.addEventListener('click', async () => {
+            showToast('Generando archivos de prueba...');
+            // Esta es solo una simulación para el propósito de la prueba
+            setTimeout(() => {
+                showToast('Archivos de prueba generados correctamente');
+                loadAllData();
+            }, 1500);
+        });
+        
+        testClearDataButton.addEventListener('click', () => {
+            showToast('Limpiando datos...');
+            
+            // Limpiar datos locales
+            puzzleData = [];
+            statsData = null;
+            
+            // Actualizar UI
+            updateStats({
+                totalFiles: 0,
+                procesados: 0,
+                pendientes: 0,
+                procesando: 0,
+                errores: 0
+            });
+            
+            puzzleContainer.innerHTML = '';
+            showToast('Datos limpiados correctamente');
+        });
+        
+        // Botones para mostrar/ocultar secciones
+        toggleStatsButton.addEventListener('click', () => {
+            const isVisible = statsContainer.style.display !== 'none';
+            statsContainer.style.display = isVisible ? 'none' : 'grid';
+            toggleStatsButton.textContent = isVisible ? 'Mostrar' : 'Ocultar';
+        });
+        
+        togglePuzzleButton.addEventListener('click', () => {
+            const isVisible = puzzleContainer.style.display !== 'none';
+            puzzleContainer.style.display = isVisible ? 'none' : 'block';
+            togglePuzzleButton.textContent = isVisible ? 'Mostrar' : 'Ocultar';
+        });
+        
+        // Inicializar al cargar
+        document.addEventListener('DOMContentLoaded', loadAllData);
+    </script>
+</body>
+</html> 

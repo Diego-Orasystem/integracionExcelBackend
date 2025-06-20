@@ -1,0 +1,334 @@
+.doc-section {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.doc-header {
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+}
+
+.doc-header h1 {
+  color: #2a4d69;
+  margin-bottom: 5px;
+}
+
+.version {
+  color: #666;
+  font-size: 0.9em;
+  font-style: italic;
+}
+
+.doc-section h2 {
+  color: #2a4d69;
+  margin-bottom: 15px;
+  margin-top: 30px;
+}
+
+.doc-section h3 {
+  color: #376996;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.doc-section h4 {
+  color: #4a759f;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.doc-section p {
+  font-size: 1.05em;
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.doc-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-bottom: 25px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.doc-card.intro {
+  border-left: 4px solid #376996;
+}
+
+.feature-highlight {
+  background: #f5f9ff;
+  padding: 15px;
+  border-radius: 6px;
+  margin-top: 15px;
+}
+
+.highlight {
+  font-weight: bold;
+  color: #376996;
+}
+
+.code-block {
+  background: #f5f5f5;
+  padding: 12px;
+  border-radius: 5px;
+  margin: 15px 0;
+  border-left: 3px solid #ccc;
+}
+
+.code-block pre {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+.code-block code {
+  color: #333;
+}
+
+.area-tree {
+  margin-top: 15px;
+  margin-left: 15px;
+}
+
+.area {
+  margin-bottom: 18px;
+  padding-left: 15px;
+  border-left: 3px solid #376996;
+}
+
+.area-title {
+  font-weight: bold;
+  color: #376996;
+  font-size: 1.1em;
+}
+
+.area-info {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 2px;
+  margin-bottom: 5px;
+}
+
+.subareas {
+  margin-left: 18px;
+  margin-top: 8px;
+}
+
+.subarea {
+  margin-bottom: 8px;
+  padding-left: 12px;
+  border-left: 2px solid #b3c6e7;
+}
+
+.subarea-title {
+  color: #4a4a4a;
+  font-weight: bold;
+}
+
+.subarea-info {
+  font-size: 0.9em;
+  color: #666;
+}
+
+.diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 30px auto;
+  max-width: 300px;
+}
+
+.entity {
+  width: 160px;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.entity-title {
+  font-weight: bold;
+}
+
+.entity-relation {
+  font-size: 0.8em;
+  color: #666;
+}
+
+.company {
+  background-color: #e1effe;
+  border: 1px solid #b3d1ff;
+}
+
+.area {
+  background-color: #e5f1e5;
+  border: 1px solid #b8d8b8;
+}
+
+.subarea {
+  background-color: #f5e9dc;
+  border: 1px solid #e6d0b8;
+}
+
+.files {
+  background-color: #f2e8f4;
+  border: 1px solid #e0c8e5;
+}
+
+.arrow {
+  font-size: 1.5em;
+  color: #999;
+  margin: 2px 0;
+}
+
+.diagram-caption {
+  text-align: center;
+  font-style: italic;
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 10px;
+}
+
+.permissions-table {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+th, td {
+  padding: 8px 12px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+td:first-child {
+  text-align: left;
+  font-weight: 500;
+}
+
+ol, ul {
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .doc-section {
+    padding: 15px;
+    margin: 20px 10px;
+  }
+  
+  .code-block {
+    padding: 8px;
+  }
+  
+  .code-block pre {
+    font-size: 0.8em;
+  }
+}
+
+/* Estilos para la sección de API */
+.api-section {
+  margin-bottom: 30px;
+}
+
+.api-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+  font-size: 0.95em;
+}
+
+.api-table th,
+.api-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.api-table th {
+  background-color: #f0f4f8;
+  font-weight: 600;
+}
+
+.api-table td {
+  vertical-align: top;
+}
+
+.api-table pre {
+  margin: 8px 0;
+  padding: 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 0.9em;
+}
+
+.method {
+  font-weight: bold;
+  border-radius: 3px;
+  padding: 3px 6px;
+  display: inline-block;
+  color: white;
+  text-align: center;
+  min-width: 50px;
+}
+
+.get {
+  background-color: #61affe;
+}
+
+.post {
+  background-color: #49cc90;
+}
+
+.put {
+  background-color: #fca130;
+}
+
+.delete {
+  background-color: #f93e3e;
+}
+
+.api-examples {
+  margin-top: 25px;
+}
+
+.api-notes {
+  background-color: #fcf8e3;
+  padding: 15px;
+  border-left: 4px solid #faebcc;
+  border-radius: 4px;
+  margin-top: 20px;
+}
+
+.api-notes ul {
+  margin-bottom: 0;
+}
+
+/* Responsive para la sección de API */
+@media (max-width: 768px) {
+  .api-table {
+    font-size: 0.85em;
+  }
+  
+  .api-table th,
+  .api-table td {
+    padding: 6px;
+  }
+} 

@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flujos de QA Manual y Datos de Prueba</title>
+    <style>
+        :root {
+            --primary: #3f51b5;
+            --secondary: #2ecc71;
+            --accent: #e74c3c;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --shadow: rgba(0,0,0,0.1);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px var(--shadow);
+        }
+        h1, h2, h3, h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        h1 {
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: 30px;
+        }
+        h2 {
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--light);
+            margin-top: 40px;
+        }
+        h3 {
+            margin-top: 25px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .flujo-test {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 0 5px 5px 0;
+        }
+        .test-data {
+            background-color: #f0f4f8;
+            border: 1px solid #d0d7de;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .test-data h4 {
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: var(--primary);
+            color: white;
+            text-align: left;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .tag-critical {
+            background-color: var(--accent);
+            color: white;
+        }
+        .tag-high {
+            background-color: var(--warning);
+            color: white;
+        }
+        .tag-medium {
+            background-color: var(--secondary);
+            color: white;
+        }
+        .completed {
+            background-color: var(--secondary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 0.8em;
+        }
+        .pending {
+            background-color: var(--warning);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 0.8em;
+        }
+        .result-box {
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px dashed #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Flujos de QA Manual y Datos de Prueba</h1>
+        
+        <p>Este documento detalla los flujos de prueba manual y proporciona datos para realizar QA exhaustivo del sistema de gestión de archivos Excel. A continuación se presentan escenarios de prueba detallados con datos específicos para verificar el correcto funcionamiento del sistema.</p>
+
+        <h2>1. Pruebas de Autenticación y Autorización <span class="completed">COMPLETADO</span></h2>
+        
+        <div class="flujo-test">
+            <h3>1.1. Inicio de Sesión</h3>
+            <ol>
+                <li>Acceder a la página de inicio de sesión</li>
+                <li>Introducir credenciales válidas</li>
+                <li>Verificar redirección al dashboard</li>
+                <li>Verificar que el menú muestra opciones adecuadas al rol</li>
+                <li>Cerrar sesión y confirmar redirección a página de login</li>
+            </ol>
+            <div class="test-data">
+                <h4>Datos de Prueba:</h4>
+                <table>
+                    <tr>
+                        <th>Tipo de Usuario</th>
+                        <th>Email</th>
+                        <th>Contraseña</th>
+                        <th>Resultado Esperado</th>
+                    </tr>
+                    <tr>
+                        <td>Administrador</td>
+                        <td>admin@sistema.com</td>
+                        <td>Admin123!</td>
+                        <td>Acceso al dashboard administrativo con todas las opciones</td>
+                    </tr>
+                    <tr>
+                        <td>Admin Empresa</td>
+                        <td>admin.empresa@acme.com</td>
+                        <td>AcmeAdmin2023</td>
+                        <td>Acceso al dashboard de empresa con gestión de usuarios y áreas</td>
+                    </tr>
+                    <tr>
+                        <td>Usuario Control</td>
+                        <td>control@acme.com</td>
+                        <td>Control2023!</td>
+                        <td>Acceso a vista de auditoría sin opciones de edición</td>
+                    </tr>
+                    <tr>
+                        <td>Usuario Responsable</td>
+                        <td>usuario@acme.com</td>
+                        <td>Usuario2023!</td>
+                        <td>Acceso a su área y subáreas asignadas</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="flujo-test">
+            <h3>1.2. Verificación de Control de Acceso</h3>
+            <ol>
+                <li>Iniciar sesión con usuario responsable</li>
+                <li>Intentar acceder a rutas administrativas mediante URL directa</li>
+                <li>Verificar redirección o mensaje de error</li>
+                <li>Intentar acceder a archivos/carpetas fuera de su área</li>
+                <li>Verificar que no se muestran o se deniega el acceso</li>
+            </ol>
+            <div class="test-data">
+                <h4>URLs para probar:</h4>
+                <ul>
+                    <li>/admin/empresas - Debe denegar acceso</li>
+                    <li>/admin/usuarios - Debe denegar acceso</li>
+                    <li>/empresa/{otra-empresa}/archivos - Debe denegar acceso</li>
+                    <li>/empresa/acme/area/{area-no-autorizada} - Debe denegar acceso</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>2. Pruebas de Gestión de Usuarios y Permisos <span class="pending">PENDIENTE</span></h2>
+        
+        <div class="flujo-test">
+            <h3>2.1. Creación de Usuarios</h3>
+            <ol>
+                <li>Iniciar sesión como administrador de empresa</li>
+                <li>Ir a sección "Gestión de Usuarios"</li>
+                <li>Hacer clic en "Nuevo Usuario"</li>
+                <li>Completar formulario con datos válidos</li>
+                <li>Asignar rol y áreas/subáreas</li>
+                <li>Guardar y verificar creación exitosa</li>
+                <li>Verificar email de notificación (si aplica)</li>
+            </ol>
+            <div class="test-data">
+                <h4>Datos para Nuevos Usuarios:</h4>
+                <table>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Área Asignada</th>
+                    </tr>
+                    <tr>
+                        <td>Carlos Rodríguez</td>
+                        <td>carlos.rodriguez@acme.com</td>
+                        <td>Usuario Responsable</td>
+                        <td>Contabilidad / Impuestos</td>
+                    </tr>
+                    <tr>
+                        <td>Laura Martínez</td>
+                        <td>laura.martinez@acme.com</td>
+                        <td>Usuario Control</td>
+                        <td>Finanzas (todas las subáreas)</td>
+                    </tr>
+                </table>
+                <p><strong>Instrucciones detalladas:</strong></p>
+                <ol>
+                    <li>Iniciar sesión como admin@acme.com (contraseña: AcmeAdmin2023)</li>
+                    <li>Navegar a "Configuración" > "Gestión de Usuarios"</li>
+                    <li>Hacer clic en botón "Añadir Usuario" (esquina superior derecha)</li>
+                    <li>Completar todos los campos del formulario:
+                        <ul>
+                            <li>Nombre completo</li>
+                            <li>Email (único en el sistema)</li>
+                            <li>Contraseña temporal (al menos 8 caracteres, combinar mayúsculas, minúsculas y números)</li>
+                            <li>Seleccionar rol del listado desplegable</li>
+                            <li>En la sección de "Asignación de Áreas", seleccionar las áreas/subáreas apropiadas</li>
+                            <li>Opcional: Añadir notas o comentarios sobre el usuario</li>
+                        </ul>
+                    </li>
+                    <li>Hacer clic en "Guardar"</li>
+                    <li>Verificar mensaje de confirmación exitosa</li>
+                    <li>Comprobar que el usuario aparece en la lista de usuarios</li>
+                    <li>Verificar que se recibe email de notificación en la dirección indicada (revisar bandeja de entrada)</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="flujo-test">
+            <h3>2.2. Asignación de Permisos</h3>
+            <ol>
+                <li>Iniciar sesión como administrador de empresa</li>
+                <li>Acceder a la sección "Permisos"</li>
+                <li>Seleccionar un usuario existente</li>
+                <li>Modificar sus permisos por área/subárea</li>
+                <li>Guardar cambios</li>
+                <li>Verificar que los permisos se aplican correctamente</li>
+            </ol>
+            <div class="test-data">
+                <h4>Escenarios de Permisos a Probar:</h4>
+                <ul>
+                    <li>Usuario con solo lectura en una carpeta</li>
+                    <li>Usuario con lectura/escritura en una subárea específica</li>
+                    <li>Usuario con permiso de administración en área específica</li>
+                    <li>Verificar herencia de permisos de área a subáreas</li>
+                    <li>Sobreescritura de permisos heredados</li>
+                </ul>
+                <p><strong>Instrucciones detalladas para cada escenario:</strong></p>
+                
+                <h5>Escenario 1: Usuario con solo lectura en una carpeta</h5>
+                <ol>
+                    <li>Iniciar sesión como admin@acme.com</li>
+                    <li>Navegar a "Configuración" > "Permisos"</li>
+                    <li>Seleccionar usuario "operaciones@acme.com"</li>
+                    <li>En la sección "Áreas y Carpetas", localizar "Finanzas/Presupuestos"</li>
+                    <li>Configurar permisos a "Solo Lectura"</li>
+                    <li>Guardar cambios</li>
+                    <li>Cerrar sesión e iniciar como operaciones@acme.com</li>
+                    <li>Navegar a "Finanzas/Presupuestos"</li>
+                    <li>Verificar que puede ver archivos pero no cargar, editar o eliminar</li>
+                </ol>
+                
+                <h5>Escenario 2: Usuario con lectura/escritura en una subárea específica</h5>
+                <ol>
+                    <li>Iniciar sesión como admin@acme.com</li>
+                    <li>Navegar a "Configuración" > "Permisos"</li>
+                    <li>Seleccionar usuario "rrhh@acme.com"</li>
+                    <li>En la sección "Áreas y Carpetas", localizar "Operaciones/Logística"</li>
+                    <li>Configurar permisos a "Lectura/Escritura"</li>
+                    <li>Guardar cambios</li>
+                    <li>Cerrar sesión e iniciar como rrhh@acme.com</li>
+                    <li>Navegar a "Operaciones/Logística"</li>
+                    <li>Verificar que puede ver, cargar y editar archivos pero no eliminar carpetas ni otorgar permisos</li>
+                </ol>
+                
+                <h5>Escenario 3: Verificar herencia de permisos</h5>
+                <ol>
+                    <li>Iniciar sesión como admin@acme.com</li>
+                    <li>Navegar a "Configuración" > "Permisos"</li>
+                    <li>Seleccionar usuario "finanzas@acme.com"</li>
+                    <li>En la sección "Áreas y Carpetas", localizar "Recursos Humanos"</li>
+                    <li>Configurar permisos a "Solo Lectura" a nivel de área</li>
+                    <li>Guardar cambios sin configurar específicamente las subáreas</li>
+                    <li>Cerrar sesión e iniciar como finanzas@acme.com</li>
+                    <li>Navegar a "Recursos Humanos" y sus subáreas</li>
+                    <li>Verificar que los permisos de "Solo Lectura" se heredan en todas las subáreas</li>
+                    <li>Verificar que este comportamiento se mantiene para nuevas carpetas creadas dentro del área</li>
+                </ol>
+            </div>
+        </div>
+
+        <h2>3. Pruebas de Gestión de Archivos <span class="pending">PENDIENTE</span></h2>
+        
+        <div class="flujo-test">
+            <h3>3.1. Carga de Archivos</h3>
+            <ol>
+                <li>Iniciar sesión como usuario responsable</li>
+                <li>Navegar a un área/carpeta con permisos de escritura</li>
+                <li>Hacer clic en "Subir Archivo"</li>
+                <li>Seleccionar un archivo Excel válido</li>
+                <li>Completar metadatos (si aplica)</li>
+                <li>Confirmar carga</li>
+                <li>Verificar que el archivo aparece en la lista</li>
+            </ol>
+            <div class="test-data">
+                <h4>Archivos de Prueba:</h4>
+                <ul>
+                    <li><strong>Archivo Pequeño:</strong> reporte_mensual.xlsx (50KB) - Debe cargarse rápidamente</li>
+                    <li><strong>Archivo Mediano:</strong> transacciones_trimestre.xlsx (5MB) - Debe mostrar barra de progreso</li>
+                    <li><strong>Archivo Grande:</strong> datos_anuales.xlsx (20MB) - Debe manejar carga prolongada</li>
+                    <li><strong>Formato Inválido:</strong> documento.docx - Debe rechazar el archivo</li>
+                    <li><strong>Excel Corrupto:</strong> archivo_dañado.xlsx - Debe detectar y rechazar</li>
+                </ul>
+                
+                <p><strong>Instrucciones detalladas para pruebas de carga:</strong></p>
+                <ol>
+                    <li>Iniciar sesión como usuario@acme.com (Usuario2023!)</li>
+                    <li>Navegar a "Explorador de Archivos" > Área asignada</li>
+                    <li>Usar los siguientes métodos de carga para probar:
+                        <ul>
+                            <li>Botón "Subir Archivo"</li>
+                            <li>Arrastrar y soltar (drag & drop) directamente en la interfaz</li>
+                            <li>Botón "Subir Múltiples Archivos" (si existe)</li>
+                        </ul>
+                    </li>
+                    <li>Para cada archivo de prueba, realizar los siguientes pasos:
+                        <ul>
+                            <li>Seleccionar el archivo correspondiente</li>
+                            <li>Completar formulario de metadatos (Título, Descripción, Etiquetas)</li>
+                            <li>Verificar la barra de progreso durante la carga</li>
+                            <li>Revisar el mensaje de confirmación al finalizar</li>
+                            <li>Comprobar que el archivo aparece correctamente en la lista</li>
+                            <li>Verificar que los metadatos se guardaron correctamente</li>
+                        </ul>
+                    </li>
+                    <li>Para archivos no válidos (docx, corrupto), verificar:
+                        <ul>
+                            <li>Mensaje de error claro y específico</li>
+                            <li>No se permite completar la carga</li>
+                            <li>Sistema se recupera adecuadamente después del error</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <p><strong>Prueba específica para archivos grandes (datos_anuales.xlsx):</strong></p>
+                <ol>
+                    <li>Cronometrar el tiempo de carga</li>
+                    <li>Verificar que la barra de progreso funciona correctamente</li>
+                    <li>Intentar navegar a otra sección durante la carga para comprobar si:
+                        <ul>
+                            <li>La carga continúa en segundo plano</li>
+                            <li>Se muestra advertencia antes de abandonar la página</li>
+                        </ul>
+                    </li>
+                    <li>Verificar notificación al completarse la carga</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="flujo-test">
+            <h3>3.2. Organización de Carpetas</h3>
+            <ol>
+                <li>Iniciar sesión como usuario con permisos adecuados</li>
+                <li>Navegar al explorador de archivos</li>
+                <li>Crear estructura de carpetas anidadas (3 niveles)</li>
+                <li>Mover archivos entre carpetas con drag & drop</li>
+                <li>Verificar que los permisos se mantienen al mover</li>
+                <li>Verificar navegación a través de breadcrumbs</li>
+            </ol>
+            <div class="test-data">
+                <h4>Estructura a Crear:</h4>
+                <pre>
+Proyectos 2023
+ ├── Q1
+ │    ├── Enero
+ │    ├── Febrero
+ │    └── Marzo
+ ├── Q2
+ │    ├── Abril
+ │    ├── Mayo
+ │    └── Junio
+ └── Documentos Compartidos
+                </pre>
+                
+                <p><strong>Instrucciones detalladas para crear y organizar carpetas:</strong></p>
+                <ol>
+                    <li>Iniciar sesión como admin@acme.com (AcmeAdmin2023)</li>
+                    <li>Navegar a "Explorador de Archivos" > "Operaciones"</li>
+                    <li>Crear carpeta raíz "Proyectos 2023":
+                        <ul>
+                            <li>Clic en botón "Nueva Carpeta"</li>
+                            <li>Introducir nombre "Proyectos 2023"</li>
+                            <li>Opcional: Añadir descripción</li>
+                            <li>Confirmar creación</li>
+                        </ul>
+                    </li>
+                    <li>Entrar en la carpeta "Proyectos 2023" y crear subcarpetas:
+                        <ul>
+                            <li>Crear carpetas "Q1", "Q2" y "Documentos Compartidos" siguiendo el mismo proceso</li>
+                        </ul>
+                    </li>
+                    <li>Entrar en la carpeta "Q1" y crear las subcarpetas "Enero", "Febrero" y "Marzo"</li>
+                    <li>Entrar en la carpeta "Q2" y crear las subcarpetas "Abril", "Mayo" y "Junio"</li>
+                    <li>Verificar la estructura creada navegando entre carpetas</li>
+                    <li>Subir al menos un archivo a cada carpeta del último nivel</li>
+                    <li>Probar organización:
+                        <ul>
+                            <li>Seleccionar archivo de "Enero" y arrastrarlo a "Febrero"</li>
+                            <li>Mover un archivo desde "Q1" a "Q2" usando el menú contextual</li>
+                            <li>Seleccionar múltiples archivos y moverlos a "Documentos Compartidos"</li>
+                        </ul>
+                    </li>
+                    <li>Verificar la navegación usando breadcrumbs (miga de pan) en la parte superior</li>
+                    <li>Comprobar que la estructura de carpetas se mantiene al cerrar sesión y volver a ingresar</li>
+                </ol>
+                
+                <p><strong>Prueba de permisos en movimiento de archivos:</strong></p>
+                <ol>
+                    <li>Iniciar sesión como admin@acme.com</li>
+                    <li>Asignar permisos específicos a una carpeta (por ejemplo, "Documentos Compartidos" con permisos especiales)</li>
+                    <li>Iniciar sesión como usuario normal</li>
+                    <li>Mover archivos a esa carpeta</li>
+                    <li>Verificar que los permisos se aplican correctamente después del movimiento</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="flujo-test">
+            <h3>3.3. Control de Versiones</h3>
+            <ol>
+                <li>Abrir un archivo existente</li>
+                <li>Modificarlo y guardar como nueva versión</li>
+                <li>Verificar que aparece como nueva versión</li>
+                <li>Comparar versiones (si función disponible)</li>
+                <li>Revertir a versión anterior</li>
+                <li>Verificar permisos específicos para gestión de versiones</li>
+            </ol>
+            <div class="test-data">
+                <h4>Archivo a Versionar:</h4>
+                <p>Usar "presupuesto_departamental.xlsx" y crear 3 versiones con cambios progresivos:</p>
+                <ul>
+                    <li>V1: Archivo original</li>
+                    <li>V2: Modificar cifras en hoja "Gastos"</li>
+                    <li>V3: Añadir nueva hoja "Proyecciones"</li>
+                </ul>
+                
+                <p><strong>Instrucciones detalladas para pruebas de versionado:</strong></p>
+                <ol>
+                    <li>Ubicación del archivo: "ACME Corporation/Finanzas/Presupuestos/presupuesto_departamental.xlsx"</li>
+                    <li>Para generar la versión 1 (original):
+                        <ul>
+                            <li>Iniciar sesión como finanzas@acme.com (Finanzas2023!)</li>
+                            <li>Navegar a la ubicación del archivo</li>
+                            <li>Verificar que existe o subirlo si es necesario</li>
+                            <li>Marcar esta versión como "Línea base"</li>
+                        </ul>
+                    </li>
+                    <li>Para generar la versión 2:
+                        <ul>
+                            <li>Descargar el archivo actual</li>
+                            <li>Abrir en Excel y modificar valores en la hoja "Gastos"</li>
+                            <li>Guardar localmente</li>
+                            <li>En la plataforma, seleccionar el archivo y hacer clic en "Subir nueva versión"</li>
+                            <li>Seleccionar el archivo modificado</li>
+                            <li>Añadir comentario: "Actualización de cifras de gastos trimestrales"</li>
+                            <li>Confirmar actualización</li>
+                        </ul>
+                    </li>
+                    <li>Para generar la versión 3:
+                        <ul>
+                            <li>Descargar la versión 2</li>
+                            <li>Abrir en Excel</li>
+                            <li>Añadir nueva hoja llamada "Proyecciones"</li>
+                            <li>Completar con datos de proyección financiera</li>
+                            <li>Guardar localmente</li>
+                            <li>Subir como nueva versión con comentario: "Añadida hoja de proyecciones financieras"</li>
+                        </ul>
+                    </li>
+                    <li>Pruebas de visualización de versiones:
+                        <ul>
+                            <li>En la vista de detalles del archivo, localizar pestaña o sección "Historial"</li>
+                            <li>Verificar que se muestran las 3 versiones con fechas y usuarios</li>
+                            <li>Comprobar que se muestran los comentarios de cada versión</li>
+                        </ul>
+                    </li>
+                    <li>Pruebas de comparación de versiones (si la función está disponible):
+                        <ul>
+                            <li>Seleccionar versiones 1 y 3</li>
+                            <li>Usar función "Comparar"</li>
+                            <li>Verificar que se destacan los cambios (nueva hoja, valores modificados)</li>
+                        </ul>
+                    </li>
+                    <li>Pruebas de reversión:
+                        <ul>
+                            <li>Seleccionar la versión 1</li>
+                            <li>Usar función "Restaurar esta versión"</li>
+                            <li>Confirmar la acción</li>
+                            <li>Verificar que el archivo ahora muestra el contenido de la versión 1</li>
+                            <li>Comprobar que se crea una nueva entrada en el historial (versión 4) que indica la restauración</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <p><strong>Prueba de permisos de versionado:</strong></p>
+                <ol>
+                    <li>Iniciar sesión como usuario con permisos limitados</li>
+                    <li>Intentar ver el historial de versiones (debe ser posible)</li>
+                    <li>Intentar descargar versiones anteriores (debe ser posible)</li>
+                    <li>Intentar revertir a una versión anterior (debe ser denegado)</li>
+                    <li>Intentar eliminar versiones antiguas (debe ser denegado)</li>
+                </ol>
+            </div>
+        </div>
+
+        <h2>4. Pruebas del Menú Dinámico <span class="completed">COMPLETADO</span></h2>
+        
+        <div class="flujo-test">
+            <h3>4.1. Adaptabilidad del Menú según Rol</h3>
+            <ol>
+                <li>Probar inicio de sesión con cada tipo de usuario</li>
+                <li>Verificar opciones de menú disponibles para cada rol</li>
+                <li>Comparar estructura de menú entre roles</li>
+                <li>Verificar que opciones administrativas solo aparecen para roles adecuados</li>
+            </ol>
+            <div class="test-data">
+                <h4>Verificación de Menú por Rol:</h4>
+                <table>
+                    <tr>
+                        <th>Rol</th>
+                        <th>Debe Mostrar</th>
+                        <th>No Debe Mostrar</th>
+                    </tr>
+                    <tr>
+                        <td>Administrador</td>
+                        <td>Administración de Empresas, Gestión de Usuarios, Configuración Global, Logs del Sistema</td>
+                        <td>N/A (acceso completo)</td>
+                    </tr>
+                    <tr>
+                        <td>Admin Empresa</td>
+                        <td>Gestión de Usuarios Empresa, Áreas, Logs Empresa, Configuración Empresa</td>
+                        <td>Configuración Global, Gestión de otras Empresas</td>
+                    </tr>
+                    <tr>
+                        <td>Usuario Control</td>
+                        <td>Dashboard de Auditoría, Reportes, Visión de Áreas</td>
+                        <td>Gestión de Usuarios, Configuración, Creación/Edición</td>
+                    </tr>
+                    <tr>
+                        <td>Usuario Responsable</td>
+                        <td>Explorador de Archivos (áreas asignadas), Mis Archivos</td>
+                        <td>Administración, Reportes Globales, Áreas no asignadas</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="flujo-test">
+            <h3>4.2. Cambio Contextual del Menú</h3>
+            <ol>
+                <li>Iniciar sesión como usuario con múltiples áreas asignadas</li>
+                <li>Navegar entre diferentes áreas</li>
+                <li>Verificar que menú contextual cambia según área actual</li>
+                <li>Comprobar que acciones específicas aparecen/desaparecen según contexto</li>
+            </ol>
+            <div class="test-data">
+                <h4>Contextos a Probar:</h4>
+                <ul>
+                    <li>Dashboard principal - Debe mostrar acciones globales</li>
+                    <li>Explorador de archivos vacío - Debe destacar "Subir" o "Crear"</li>
+                    <li>Dentro de carpeta con contenido - Debe mostrar acciones de selección múltiple</li>
+                    <li>Vista de archivo individual - Debe mostrar acciones específicas del archivo</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>5. Pruebas de Interfaz y Experiencia de Usuario <span class="pending">PENDIENTE</span></h2>
+        
+        <div class="flujo-test">
+            <h3>5.1. Validación de Formularios</h3>
+            <ol>
+                <li>Probar formularios de creación/edición con datos inválidos</li>
+                <li>Verificar mensajes de error claros</li>
+                <li>Comprobar validación en tiempo real (si aplica)</li>
+                <li>Verificar conservación de datos válidos al corregir errores</li>
+            </ol>
+            <div class="test-data">
+                <h4>Escenarios de Prueba:</h4>
+                <ul>
+                    <li>Email inválido: "usuario@incompleto"</li>
+                    <li>Contraseña débil: "123456"</li>
+                    <li>Campos obligatorios vacíos</li>
+                    <li>Valores duplicados (email ya existente)</li>
+                    <li>Valores fuera de rango (números negativos en campos positivos)</li>
+                </ul>
+                
+                <p><strong>Instrucciones detalladas para pruebas de validación de formularios:</strong></p>
+                
+                <h5>Formulario de Registro de Usuario:</h5>
+                <ol>
+                    <li>Iniciar sesión como admin@acme.com</li>
+                    <li>Navegar a "Configuración" > "Gestión de Usuarios" > "Añadir Usuario"</li>
+                    <li>Realizar las siguientes pruebas una por una:
+                        <ul>
+                            <li><strong>Email inválido:</strong> Introducir "usuario@incompleto" y verificar que se muestra error específico</li>
+                            <li><strong>Email duplicado:</strong> Intentar crear usuario con email "control@acme.com" (ya existente) y verificar mensaje de error</li>
+                            <li><strong>Contraseña débil:</strong> Probar con "123456" y verificar que se rechaza con mensaje explicativo</li>
+                            <li><strong>Campos obligatorios:</strong> Dejar nombre vacío y verificar que no permite continuar</li>
+                            <li><strong>Selección de rol:</strong> Intentar guardar sin seleccionar rol y verificar error</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h5>Formulario de Creación de Carpeta:</h5>
+                <ol>
+                    <li>Navegar al explorador de archivos</li>
+                    <li>Iniciar creación de carpeta</li>
+                    <li>Realizar las siguientes pruebas:
+                        <ul>
+                            <li><strong>Nombre vacío:</strong> Intentar crear carpeta sin nombre</li>
+                            <li><strong>Caracteres especiales:</strong> Probar nombres con caracteres como "*/\\:?\"<>|"</li>
+                            <li><strong>Nombre duplicado:</strong> Intentar crear carpeta con nombre ya existente</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h5>Formulario de Carga de Archivo:</h5>
+                <ol>
+                    <li>Iniciar proceso de carga de archivo</li>
+                    <li>Probar validación de:
+                        <ul>
+                            <li><strong>Archivo sin seleccionar:</strong> Intentar continuar sin elegir archivo</li>
+                            <li><strong>Metadatos incompletos:</strong> Omitir campos obligatorios</li>
+                            <li><strong>Descripción muy larga:</strong> Introducir texto excesivamente largo</li>
+                        </ul>
+                    </li>
+                    <li>Verificar que tras corregir errores, los campos válidos mantienen su información</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="flujo-test">
+            <h3>5.2. Responsividad</h3>
+            <ol>
+                <li>Probar interfaz en diferentes tamaños de pantalla</li>
+                <li>Verificar usabilidad en tablet</li>
+                <li>Comprobar funcionalidad en móvil</li>
+                <li>Probar funcionamiento del menú en dispositivos pequeños</li>
+            </ol>
+            <div class="test-data">
+                <h4>Dispositivos/Resoluciones:</h4>
+                <ul>
+                    <li>Desktop: 1920x1080</li>
+                    <li>Laptop: 1366x768</li>
+                    <li>Tablet: 768x1024</li>
+                    <li>Móvil: 375x667</li>
+                </ul>
+                
+                <p><strong>Instrucciones detalladas para pruebas de responsividad:</strong></p>
+                
+                <h5>Pruebas en Desktop (1920x1080):</h5>
+                <ol>
+                    <li>Verificar que la interfaz aprovecha el espacio disponible</li>
+                    <li>Comprobar que los componentes están correctamente alineados</li>
+                    <li>Verificar visibilidad de todas las opciones del menú principal</li>
+                    <li>Probar la vista de explorador de archivos en modo cuadrícula</li>
+                    <li>Revisar que las tablas muestran todas sus columnas correctamente</li>
+                </ol>
+                
+                <h5>Pruebas en Laptop (1366x768):</h5>
+                <ol>
+                    <li>Verificar adaptación correcta de la interfaz</li>
+                    <li>Comprobar si aparecen barras de desplazamiento horizontales (no deberían)</li>
+                    <li>Verificar legibilidad de texto y tamaño de botones</li>
+                    <li>Probar navegación por carpetas profundas (breadcrumbs)</li>
+                </ol>
+                
+                <h5>Pruebas en Tablet (768x1024):</h5>
+                <ol>
+                    <li>Verificar cambio a diseño específico para tablet</li>
+                    <li>Comprobar comportamiento del menú (¿colapsa a menú hamburguesa?)</li>
+                    <li>Verificar que los elementos táctiles tienen tamaño adecuado</li>
+                    <li>Probar operaciones de arrastrar y soltar</li>
+                    <li>Verificar formularios y modales</li>
+                </ol>
+                
+                <h5>Pruebas en Móvil (375x667):</h5>
+                <ol>
+                    <li>Verificar diseño específico para móvil</li>
+                    <li>Comprobar menú hamburguesa o similar</li>
+                    <li>Verificar que no hay texto truncado o desbordado</li>
+                    <li>Probar navegación entre secciones</li>
+                    <li>Verificar carga y visualización de archivos</li>
+                    <li>Comprobar formularios y validación</li>
+                </ol>
+                
+                <p><strong>Herramientas para pruebas:</strong></p>
+                <ul>
+                    <li>Navegador Chrome con herramientas de desarrollo (modo responsive)</li>
+                    <li>Navegador Firefox con modo responsive</li>
+                    <li>Dispositivos físicos si están disponibles</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>6. Datos de Prueba Completos</h2>
+        
+        <div class="test-data">
+            <h3>Empresas</h3>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                </tr>
+                <tr>
+                    <td>EMP001</td>
+                    <td>ACME Corporation</td>
+                    <td>Empresa principal de pruebas</td>
+                </tr>
+                <tr>
+                    <td>EMP002</td>
+                    <td>Globex Industries</td>
+                    <td>Empresa secundaria para pruebas</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="test-data">
+            <h3>Áreas y Subáreas</h3>
+            <table>
+                <tr>
+                    <th>Empresa</th>
+                    <th>Área</th>
+                    <th>Subáreas</th>
+                </tr>
+                <tr>
+                    <td>ACME Corporation</td>
+                    <td>Finanzas</td>
+                    <td>Contabilidad, Presupuestos, Impuestos</td>
+                </tr>
+                <tr>
+                    <td>ACME Corporation</td>
+                    <td>Recursos Humanos</td>
+                    <td>Reclutamiento, Capacitación, Nómina</td>
+                </tr>
+                <tr>
+                    <td>ACME Corporation</td>
+                    <td>Operaciones</td>
+                    <td>Producción, Logística, Control de Calidad</td>
+                </tr>
+                <tr>
+                    <td>Globex Industries</td>
+                    <td>Proyectos</td>
+                    <td>Diseño, Implementación, Seguimiento</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="test-data">
+            <h3>Credenciales de Usuarios de Prueba</h3>
+            <table>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Contraseña</th>
+                    <th>Rol</th>
+                    <th>Empresa/Área</th>
+                </tr>
+                <tr>
+                    <td>admin@sistema.com</td>
+                    <td>Admin123!</td>
+                    <td>Administrador Sistema</td>
+                    <td>Todas</td>
+                </tr>
+                <tr>
+                    <td>admin@acme.com</td>
+                    <td>AcmeAdmin2023</td>
+                    <td>Admin Empresa</td>
+                    <td>ACME Corporation</td>
+                </tr>
+                <tr>
+                    <td>admin@globex.com</td>
+                    <td>GlobeX2023!</td>
+                    <td>Admin Empresa</td>
+                    <td>Globex Industries</td>
+                </tr>
+                <tr>
+                    <td>finanzas@acme.com</td>
+                    <td>Finanzas2023!</td>
+                    <td>Usuario Responsable</td>
+                    <td>ACME/Finanzas</td>
+                </tr>
+                <tr>
+                    <td>rrhh@acme.com</td>
+                    <td>RRHH2023!</td>
+                    <td>Usuario Responsable</td>
+                    <td>ACME/Recursos Humanos</td>
+                </tr>
+                <tr>
+                    <td>operaciones@acme.com</td>
+                    <td>Operaciones2023!</td>
+                    <td>Usuario Responsable</td>
+                    <td>ACME/Operaciones</td>
+                </tr>
+                <tr>
+                    <td>control@acme.com</td>
+                    <td>Control2023!</td>
+                    <td>Usuario Control</td>
+                    <td>ACME (todas las áreas)</td>
+                </tr>
+                <tr>
+                    <td>proyectos@globex.com</td>
+                    <td>Proyectos2023!</td>
+                    <td>Usuario Responsable</td>
+                    <td>Globex/Proyectos</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="test-data">
+            <h3>Archivos de Prueba</h3>
+            <p>Descargar <a href="#">paquete de archivos Excel de prueba</a> que incluye:</p>
+            <ul>
+                <li>reporte_mensual.xlsx (50KB)</li>
+                <li>presupuesto_departamental.xlsx (2MB)</li>
+                <li>transacciones_trimestre.xlsx (5MB)</li>
+                <li>datos_anuales.xlsx (20MB)</li>
+                <li>plantilla_vacía.xlsx (20KB)</li>
+                <li>archivo_corrupto.xlsx (para pruebas de validación)</li>
+                <li>formato_incorrecto.docx (para pruebas de validación)</li>
+            </ul>
+        </div>
+        
+        <h2>7. Lista de Verificación de QA</h2>
+        
+        <div class="test-data">
+            <h3>Verificación de Funcionalidad</h3>
+            <ul>
+                <li><span class="tag tag-critical">Crítico</span> <span style="text-decoration: line-through;">Autenticación completa funciona correctamente</span> ✓</li>
+                <li><span class="tag tag-critical">Crítico</span> Permisos se aplican correctamente a todos los niveles</li>
+                <li><span class="tag tag-high">Alto</span> Gestión de archivos funciona sin errores</li>
+                <li><span class="tag tag-high">Alto</span> <span style="text-decoration: line-through;">Menú dinámico muestra opciones correctas por rol/contexto</span> ✓</li>
+                <li><span class="tag tag-medium">Medio</span> Notificaciones funcionan correctamente</li>
+                <li><span class="tag tag-medium">Medio</span> Búsqueda de archivos retorna resultados correctos</li>
+                <li><span class="tag tag-medium">Medio</span> Exportación de reportes funciona correctamente</li>
+            </ul>
+        </div>
+        
+        <div class="test-data">
+            <h3>Verificación de Rendimiento</h3>
+            <ul>
+                <li><span class="tag tag-high">Alto</span> Carga de archivos grandes (>10MB) completa sin errores</li>
+                <li><span class="tag tag-high">Alto</span> Navegación entre carpetas con muchos archivos es fluida</li>
+                <li><span class="tag tag-medium">Medio</span> Listado de logs extenso carga con paginación correcta</li>
+                <li><span class="tag tag-medium">Medio</span> Operaciones simultáneas por múltiples usuarios funcionan correctamente</li>
+            </ul>
+        </div>
+        
+        <div class="test-data">
+            <h3>Verificación de Seguridad</h3>
+            <ul>
+                <li><span class="tag tag-critical">Crítico</span> No es posible acceder a recursos sin autenticación</li>
+                <li><span class="tag tag-critical">Crítico</span> No es posible saltar restricciones de permisos</li>
+                <li><span class="tag tag-high">Alto</span> Sesiones expiran correctamente</li>
+                <li><span class="tag tag-high">Alto</span> No es posible inyectar código en formularios</li>
+                <li><span class="tag tag-medium">Medio</span> Logs registran intentos de acceso no autorizados</li>
+            </ul>
+        </div>
+        
+        <div class="result-box">
+            <p><strong>Resultado de QA:</strong></p>
+            <p>✅ <strong>1. Pruebas de Autenticación y Autorización:</strong> Completado y funcionando correctamente. Todos los roles acceden a las secciones correspondientes y se aplican restricciones de acceso.</p>
+            <p>✅ <strong>4. Pruebas del Menú Dinámico:</strong> Completado y funcionando correctamente. El menú se adapta según el rol del usuario y el contexto de navegación.</p>
+            <p>⏳ <strong>Pruebas Pendientes:</strong> Secciones 2, 3 y 5 en proceso.</p>
+        </div>
+    </div>
+</body>
+</html> 

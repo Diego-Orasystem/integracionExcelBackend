@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación MVP - Visualización Simplificada de Estado</title>
+    <link rel="stylesheet" href="../Documentacion/documentacion-mvp-menu-y-archivos.css">
+</head>
+<body>
+    <header>
+        <h1>Documentación MVP - Visualización Simplificada de Estado</h1>
+        <div class="subtitle">Requerimiento #11: Gráfico tipo rompecabezas para monitoreo de archivos</div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#descripcion">Descripción</a></li>
+            <li><a href="#componentes">Componentes</a></li>
+            <li><a href="#api">API</a></li>
+            <li><a href="#interfaz">Interfaz</a></li>
+            <li><a href="#implementacion">Implementación</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="descripcion">
+            <h2>Descripción del Requerimiento</h2>
+            <p>El requerimiento #11 consiste en el desarrollo de una versión básica del gráfico tipo rompecabezas para el monitoreo de archivos en el sistema. Esta visualización permitirá a los usuarios tener una comprensión rápida y clara del estado actual de los archivos en el sistema.</p>
+            
+            <p>La visualización simplificada mostrará una representación gráfica donde cada archivo se visualiza como una pieza del rompecabezas, con colores y formas que indican su estado actual, tipo, y otras características relevantes.</p>
+        </section>
+
+        <section id="componentes">
+            <h2>Componentes Principales</h2>
+            <ol>
+                <li>
+                    <h3>Backend</h3>
+                    <p>API RESTful para obtener datos de estado de archivos con información agregada y categorizada</p>
+                </li>
+                <li>
+                    <h3>Frontend</h3>
+                    <p>Componente visual en Angular que renderiza el gráfico de rompecabezas utilizando D3.js</p>
+                </li>
+                <li>
+                    <h3>Modelo de Datos</h3>
+                    <p>Extensión del modelo de archivos para incluir estados y metadatos necesarios para la visualización</p>
+                </li>
+            </ol>
+        </section>
+
+        <section id="api">
+            <h2>API</h2>
+            <p>La API proporcionará endpoints para obtener los datos necesarios para la visualización:</p>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Endpoint</th>
+                            <th>Método</th>
+                            <th>Descripción</th>
+                            <th>Parámetros</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>/api/files/status</code></td>
+                            <td>GET</td>
+                            <td>Obtiene datos agregados sobre el estado de los archivos</td>
+                            <td>
+                                <ul>
+                                    <li><code>?groupBy=folder</code> - Agrupa por carpeta</li>
+                                    <li><code>?groupBy=date</code> - Agrupa por fecha</li>
+                                    <li><code>?groupBy=type</code> - Agrupa por tipo de archivo</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/files/metrics</code></td>
+                            <td>GET</td>
+                            <td>Retorna métricas para la visualización del rompecabezas</td>
+                            <td>
+                                <ul>
+                                    <li><code>?timeFrame=week</code> - Últimos 7 días</li>
+                                    <li><code>?timeFrame=month</code> - Último mes</li>
+                                    <li><code>?timeFrame=all</code> - Todos los registros</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="interfaz">
+            <h2>Interfaz de Usuario</h2>
+            <p>La interfaz de usuario para la visualización simplificada del estado de archivos constará de los siguientes elementos:</p>
+            
+            <div class="mock-ui">
+                <div class="sidebar">
+                    <div class="logo">ExcelManager</div>
+                    <div class="menu-item active">Dashboard</div>
+                    <div class="menu-item">Archivos</div>
+                    <div class="menu-item">Usuarios</div>
+                    <div class="menu-item">Configuración</div>
+                </div>
+                <div class="content">
+                    <div class="header">
+                        <h3>Dashboard - Estado de Archivos</h3>
+                        <div class="user">
+                            Usuario <span class="dropdown">▼</span>
+                        </div>
+                    </div>
+                    <div class="main-content">
+                        <div class="section-title">
+                            <h4>Visualización de Estado (Rompecabezas)</h4>
+                            <select class="filter-select">
+                                <option>Todos</option>
+                                <option>Por Carpeta</option>
+                                <option>Por Tipo</option>
+                                <option>Por Fecha</option>
+                            </select>
+                        </div>
+                        
+                        <div class="puzzle-visualization">
+                            <!-- Aquí iría el gráfico de rompecabezas -->
+                            <div style="height: 200px; background-color: #f5f5f5; border: 1px dashed #ccc; display: flex; justify-content: center; align-items: center;">
+                                [Visualización del Rompecabezas]
+                            </div>
+                        </div>
+                        
+                        <div class="puzzle-legend mt-20">
+                            <h4>Leyenda</h4>
+                            <div style="display: flex; margin-top: 10px;">
+                                <div style="margin-right: 20px;"><span style="display: inline-block; width: 15px; height: 15px; background-color: var(--primary-color); margin-right: 5px;"></span> Archivos procesados</div>
+                                <div style="margin-right: 20px;"><span style="display: inline-block; width: 15px; height: 15px; background-color: var(--accent-color); margin-right: 5px;"></span> Archivos pendientes</div>
+                                <div><span style="display: inline-block; width: 15px; height: 15px; background-color: var(--secondary-color); margin-right: 5px;"></span> Archivos en proceso</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="caption">Mockup de la interfaz de visualización simplificada del estado de archivos</div>
+        </section>
+
+        <section id="implementacion">
+            <h2>Plan de Implementación</h2>
+            <ol>
+                <li>
+                    <h3>Backend (Node.js + Express + MongoDB)</h3>
+                    <ul>
+                        <li>Extender el modelo de File para incluir estados de procesamiento</li>
+                        <li>Implementar controladores para las nuevas APIs de estado y métricas</li>
+                        <li>Configurar rutas para los nuevos endpoints</li>
+                        <li>Implementar lógica de agregación de datos para la visualización</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>Frontend (Angular)</h3>
+                    <ul>
+                        <li>Crear componente PuzzleVisualizationComponent</li>
+                        <li>Implementar servicio FileStatusService para consumir las APIs</li>
+                        <li>Integrar D3.js para la visualización del rompecabezas</li>
+                        <li>Implementar filtros y controles de usuario</li>
+                        <li>Desarrollar estilos y animaciones para la visualización</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>Pruebas</h3>
+                    <ul>
+                        <li>Pruebas unitarias para los nuevos endpoints y servicios</li>
+                        <li>Pruebas de integración para validar la correcta visualización de datos</li>
+                        <li>Pruebas de rendimiento con diferentes volúmenes de datos</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p>Documentación MVP - Sistema de Gestión de Archivos Excel</p>
+    </footer>
+</body>
+</html> 

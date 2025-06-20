@@ -1,0 +1,288 @@
+{
+  "success": true,
+  "data": {
+    "areas": [
+      {
+        "_id": "6818d153e057423ffc0aeed2",
+        "name": "Finanzas",
+        "description": "Área financiera de la empresa",
+        "responsibleUserId": "6818d151e057423ffc0aeebe",
+        "icon": "money-bill-wave",
+        "color": "#2ecc71",
+        "folderId": "6818d153e057423ffc0aeed0",
+        "stats": {
+          "existingFiles": 0,
+          "expectedFiles": 0,
+          "missingFiles": 0,
+          "completionRate": 1,
+          "totalSize": 0,
+          "lastModified": null
+        },
+        "status": "completo",
+        "responsible": {
+          "_id": "6818d151e057423ffc0aeebe",
+          "name": "Usuario Finanzas",
+          "email": "finanzas@acme.com"
+        },
+        "subareas": [
+          {
+            "_id": "6818d153e057423ffc0aeed6",
+            "name": "Contabilidad",
+            "description": "Subárea de Finanzas",
+            "areaId": "6818d153e057423ffc0aeed2",
+            "responsibleUserId": "6818d151e057423ffc0aeebe",
+            "folderId": "6818d153e057423ffc0aeed4",
+            "stats": {
+              "existingFiles": 0,
+              "expectedFiles": 0,
+              "missingFiles": 0,
+              "completionRate": 1,
+              "totalSize": 0,
+              "lastModified": null
+            },
+            "status": "completo",
+            "responsible": {
+              "_id": "6818d151e057423ffc0aeebe",
+              "name": "Usuario Finanzas",
+              "email": "finanzas@acme.com"
+            }
+          },
+          {
+            "_id": "6818d153e057423ffc0aeeda",
+            "name": "Presupuestos",
+            "description": "Subárea de Finanzas",
+            "areaId": "6818d153e057423ffc0aeed2",
+            "responsibleUserId": "6818d151e057423ffc0aeebe",
+            "folderId": "6818d153e057423ffc0aeed8",
+            "stats": {
+              "existingFiles": 1,
+              "expectedFiles": 0,
+              "missingFiles": 0,
+              "completionRate": 1,
+              "totalSize": 18,
+              "lastModified": "2025-05-05T21:22:31.225Z"
+            },
+            "status": "completo",
+            "responsible": {
+              "_id": "6818d151e057423ffc0aeebe",
+              "name": "Usuario Finanzas",
+              "email": "finanzas@acme.com"
+            }
+          },
+          {
+            "_id": "6818d153e057423ffc0aeede",
+            "name": "Impuestos",
+            "description": "Subárea de Finanzas",
+            "areaId": "6818d153e057423ffc0aeed2",
+            "responsibleUserId": "6818d151e057423ffc0aeebe",
+            "folderId": "6818d153e057423ffc0aeedc",
+            "stats": {
+              "existingFiles": 0,
+              "expectedFiles": 0,
+              "missingFiles": 0,
+              "completionRate": 1,
+              "totalSize": 0,
+              "lastModified": null
+            },
+            "status": "completo",
+            "responsible": {
+              "_id": "6818d151e057423ffc0aeebe",
+              "name": "Usuario Finanzas",
+              "email": "finanzas@acme.com"
+            }
+          }
+        ]
+      },
+      {
+        "_id": "6818d153e057423ffc0aeee4",
+        "name": "Recursos Humanos",
+        "description": "Gestión del personal",
+        "responsibleUserId": "6818d152e057423ffc0aeec2",
+        "icon": "users",
+        "color": "#3498db",
+        "folderId": "6818d153e057423ffc0aeee2",
+        "stats": {
+          "existingFiles": 0,
+          "expectedFiles": 0,
+          "missingFiles": 0,
+          "completionRate": 1,
+          "totalSize": 0,
+          "lastModified": null
+        },
+        "status": "completo",
+        "responsible": {
+          "_id": "6818d152e057423ffc0aeec2",
+          "name": "Usuario RRHH",
+          "email": "rrhh@acme.com"
+        },
+        "subareas": [
+          {
+            "_id": "6818d154e057423ffc0aeee8",
+            "name": "Reclutamiento",
+            "description": "Subárea de Recursos Humanos",
+            "areaId": "6818d153e057423ffc0aeee4",
+            "responsibleUserId": "6818d152e057423ffc0aeec2",
+            "folderId": "6818d154e057423ffc0aeee6",
+            "stats": {
+              "existingFiles": 1,
+              "expectedFiles": 0,
+              "missingFiles": 0,
+              "completionRate": 1,
+              "totalSize": 11127,
+              "lastModified": "2025-05-05T21:23:37.184Z"
+            },
+            "status": "completo",
+            "responsible": {
+              "_id": "6818d152e057423ffc0aeec2",
+              "name": "Usuario RRHH",
+              "email": "rrhh@acme.com"
+            }
+          },
+          {
+            "_id": "6818d154e057423ffc0aeeec",
+            "name": "Capacitación",
+            "description": "Subárea de Recursos Humanos",
+            "areaId": "6818d153e057423ffc0aeee4",
+            "responsibleUserId": "6818d152e057423ffc0aeec2",
+            "folderId": "6818d154e057423ffc0aeeea",
+            "stats": {
+              "existingFiles": 0,
+              "expectedFiles": 0,
+              "missingFiles": 0,
+              "completionRate": 1,
+              "totalSize": 0,
+              "lastModified": null
+            },
+            "status": "completo",
+            "responsible": {
+              "_id": "6818d152e057423ffc0aeec2",
+              "name": "Usuario RRHH",
+              "email": "rrhh@acme.com"
+            }
+          },
+          {
+            "_id": "6818d154e057423ffc0aeef0",
+            "name": "Nómina",
+            "description": "Subárea de Recursos Humanos",
+            "areaId": "6818d153e057423ffc0aeee4",
+            "responsibleUserId": "6818d152e057423ffc0aeec2",
+            "folderId": "6818d154e057423ffc0aeeee",
+            "stats": {
+              "existingFiles": 0,
+              "expectedFiles": 0,
+              "missingFiles": 0,
+              "completionRate": 1,
+              "totalSize": 0,
+              "lastModified": null
+            },
+            "status": "completo",
+            "responsible": {
+              "_id": "6818d152e057423ffc0aeec2",
+              "name": "Usuario RRHH",
+              "email": "rrhh@acme.com"
+            }
+          }
+        ]
+      },
+      {
+        "_id": "6818d154e057423ffc0aeef6",
+        "name": "Operaciones",
+        "description": "Operaciones y logística",
+        "responsibleUserId": "6818d152e057423ffc0aeec6",
+        "icon": "cogs",
+        "color": "#e74c3c",
+        "folderId": "6818d154e057423ffc0aeef4",
+        "stats": {
+          "existingFiles": 0,
+          "expectedFiles": 0,
+          "missingFiles": 0,
+          "completionRate": 1,
+          "totalSize": 0,
+          "lastModified": null
+        },
+        "status": "completo",
+        "responsible": {
+          "_id": "6818d152e057423ffc0aeec6",
+          "name": "Usuario Operaciones",
+          "email": "operaciones@acme.com"
+        },
+        "subareas": [
+          {
+            "_id": "6818d154e057423ffc0aeefa",
+            "name": "Producción",
+            "description": "Subárea de Operaciones",
+            "areaId": "6818d154e057423ffc0aeef6",
+            "responsibleUserId": "6818d152e057423ffc0aeec6",
+            "folderId": "6818d154e057423ffc0aeef8",
+            "stats": {
+              "existingFiles": 0,
+              "expectedFiles": 0,
+              "missingFiles": 0,
+              "completionRate": 1,
+              "totalSize": 0,
+              "lastModified": null
+            },
+            "status": "completo",
+            "responsible": {
+              "_id": "6818d152e057423ffc0aeec6",
+              "name": "Usuario Operaciones",
+              "email": "operaciones@acme.com"
+            }
+          },
+          {
+            "_id": "6818d154e057423ffc0aeefe",
+            "name": "Logística",
+            "description": "Subárea de Operaciones",
+            "areaId": "6818d154e057423ffc0aeef6",
+            "responsibleUserId": "6818d152e057423ffc0aeec6",
+            "folderId": "6818d154e057423ffc0aeefc",
+            "stats": {
+              "existingFiles": 0,
+              "expectedFiles": 0,
+              "missingFiles": 0,
+              "completionRate": 1,
+              "totalSize": 0,
+              "lastModified": null
+            },
+            "status": "completo",
+            "responsible": {
+              "_id": "6818d152e057423ffc0aeec6",
+              "name": "Usuario Operaciones",
+              "email": "operaciones@acme.com"
+            }
+          },
+          {
+            "_id": "6818d155e057423ffc0aef02",
+            "name": "Control de Calidad",
+            "description": "Subárea de Operaciones",
+            "areaId": "6818d154e057423ffc0aeef6",
+            "responsibleUserId": "6818d152e057423ffc0aeec6",
+            "folderId": "6818d154e057423ffc0aef00",
+            "stats": {
+              "existingFiles": 0,
+              "expectedFiles": 0,
+              "missingFiles": 0,
+              "completionRate": 1,
+              "totalSize": 0,
+              "lastModified": null
+            },
+            "status": "completo",
+            "responsible": {
+              "_id": "6818d152e057423ffc0aeec6",
+              "name": "Usuario Operaciones",
+              "email": "operaciones@acme.com"
+            }
+          }
+        ]
+      }
+    ],
+    "summary": {
+      "totalAreas": 3,
+      "totalSubareas": 9,
+      "totalExpectedFiles": 0,
+      "totalExistingFiles": 2,
+      "totalMissingFiles": 0,
+      "overallCompletionRate": 1
+    }
+  }
+}

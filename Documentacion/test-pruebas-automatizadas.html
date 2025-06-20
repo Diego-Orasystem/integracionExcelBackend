@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación de Pruebas Automatizadas - Excel Manager</title>
+    <style>
+        :root {
+            --primary-color: #4a6da7;
+            --secondary-color: #8bb8e8;
+            --accent-color: #e89f3d;
+            --error-color: #e85d3d;
+            --success-color: #46a758;
+            --warning-color: #e8d83d;
+            --text-color: #333;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+        
+        section {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        h3 {
+            color: var(--primary-color);
+            margin: 1.5rem 0 0.75rem;
+            font-size: 1.2rem;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        ul, ol {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f0f0f0;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.9rem;
+        }
+        
+        pre {
+            background-color: #f0f0f0;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+        }
+        
+        .test-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .test-header {
+            background-color: #f5f5f5;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .test-body {
+            padding: 1rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .badge-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .badge-danger {
+            background-color: var(--error-color);
+            color: white;
+        }
+        
+        .badge-warning {
+            background-color: var(--warning-color);
+            color: #333;
+        }
+        
+        .badge-info {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .terminal {
+            background-color: #1e1e1e;
+            color: #f0f0f0;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+        }
+        
+        .terminal .green {
+            color: #46a758;
+        }
+        
+        .terminal .red {
+            color: #e85d3d;
+        }
+        
+        .terminal .yellow {
+            color: #e8d83d;
+        }
+        
+        .terminal .cyan {
+            color: #8bb8e8;
+        }
+        
+        .image-container {
+            margin: 1.5rem 0;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+        
+        .btn:hover {
+            background-color: #3a5d97;
+        }
+        
+        footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Documentación de Pruebas Automatizadas</h1>
+        <div class="subtitle">Excel Manager - MVP de Visualización de Estado de Archivos</div>
+    </header>
+    
+    <div class="container">
+        <section>
+            <h2>Introducción</h2>
+            <p>Este documento describe las pruebas automatizadas implementadas para el MVP de visualización de estado de archivos Excel. Las pruebas están diseñadas para verificar la correcta funcionalidad e integración de los diferentes componentes del sistema, así como para validar el sistema de roles y permisos.</p>
+            
+            <p>Las pruebas se han organizado en tres categorías principales:</p>
+            
+            <ul>
+                <li><strong>Pruebas Unitarias</strong>: Verifican el funcionamiento correcto de componentes individuales</li>
+                <li><strong>Pruebas de Integración</strong>: Comprueban la interacción entre diferentes componentes</li>
+                <li><strong>Pruebas de Roles y Permisos</strong>: Validan el sistema de control de acceso</li>
+            </ul>
+        </section>
+        
+        <section>
+            <h2>Estructura de Pruebas</h2>
+            
+            <h3>Archivos y Ubicaciones</h3>
+            <p>Las pruebas automatizadas se encuentran en los siguientes archivos:</p>
+            
+            <ul>
+                <li><code>src/scripts/run-unit-tests.js</code> - Pruebas unitarias</li>
+                <li><code>src/scripts/run-integration-tests.js</code> - Pruebas de integración</li>
+                <li><code>src/scripts/test-roles-permissions.js</code> - Pruebas de roles y permisos</li>
+                <li><code>src/scripts/run-all-tests.js</code> - Script unificado para ejecutar todas las pruebas</li>
+            </ul>
+            
+            <h3>Comandos de Ejecución</h3>
+            <p>Las pruebas pueden ejecutarse mediante los siguientes comandos npm:</p>
+            
+            <pre>
+# Ejecutar todas las pruebas
+npm run test
+
+# Ejecutar solo pruebas unitarias
+npm run test:unit
+
+# Ejecutar solo pruebas de integración
+npm run test:integration
+
+# Ejecutar solo pruebas de roles y permisos
+npm run test:roles
+            </pre>
+            
+            <h3>Resultados de Pruebas</h3>
+            <p>Los resultados de las pruebas se almacenan en la carpeta <code>test-results/</code> en los siguientes formatos:</p>
+            
+            <ul>
+                <li>Archivos JSON con resultados detallados de cada tipo de prueba</li>
+                <li>Un archivo HTML con un informe visual unificado de todas las pruebas</li>
+            </ul>
+            
+            <div class="terminal">
+<span class="cyan">=============================================</span>
+<span class="cyan">   RESUMEN FINAL DE PRUEBAS</span>
+<span class="cyan">=============================================</span>
+Total de pruebas: 25
+<span class="green">Pruebas exitosas: 23</span>
+<span class="red">Pruebas fallidas: 2</span>
+<span class="yellow">Tasa de éxito global: 92%</span>
+Tiempo total: 3.45 segundos
+
+<span class="cyan">Informe HTML generado: test-results/test-report-2023-09-20T10-25-30.123Z.html</span>
+<span class="cyan">=============================================</span>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Pruebas Unitarias</h2>
+            
+            <p>Las pruebas unitarias se centran en verificar el funcionamiento correcto de los controladores de forma aislada, simulando las solicitudes HTTP y validando las respuestas.</p>
+            
+            <h3>Objetivos</h3>
+            <ul>
+                <li>Verificar que los controladores funcionan correctamente con diferentes parámetros</li>
+                <li>Comprobar que las respuestas tienen la estructura esperada</li>
+                <li>Validar el manejo adecuado de errores</li>
+            </ul>
+            
+            <h3>Casos de Prueba</h3>
+            
+            <div class="test-card">
+                <div class="test-header">
+                    <span>getFileStatusData - agrupación por carpeta</span>
+                    <span class="badge badge-success">Exitoso</span>
+                </div>
+                <div class="test-body">
+                    <p>Verifica que el controlador devuelve correctamente los datos agrupados por carpeta.</p>
+                    <ul>
+                        <li>Parámetros: <code>{ groupBy: 'folder' }</code></li>
+                        <li>Verificación: La respuesta tiene estructura correcta con datos agrupados</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="test-card">
+                <div class="test-header">
+                    <span>getFileMetrics - timeFrame week</span>
+                    <span class="badge badge-success">Exitoso</span>
+                </div>
+                <div class="test-body">
+                    <p>Verifica que el controlador devuelve métricas filtradas por la última semana.</p>
+                    <ul>
+                        <li>Parámetros: <code>{ timeFrame: 'week' }</code></li>
+                        <li>Verificación: Datos filtrados por fecha y estructura correcta de stats/puzzleItems</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="test-card">
+                <div class="test-header">
+                    <span>updateFileStatus - estado inválido</span>
+                    <span class="badge badge-success">Exitoso</span>
+                </div>
+                <div class="test-body">
+                    <p>Verifica que el controlador rechaza correctamente un estado no válido.</p>
+                    <ul>
+                        <li>Parámetros: <code>{ status: 'estadoInvalido' }</code></li>
+                        <li>Verificación: Error 400 con código 'INVALID_STATUS'</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Pruebas de Integración</h2>
+            
+            <p>Las pruebas de integración verifican la interacción entre diferentes componentes del sistema, asegurando que todos funcionen correctamente en conjunto.</p>
+            
+            <h3>Objetivos</h3>
+            <ul>
+                <li>Verificar la comunicación entre la API y la base de datos</li>
+                <li>Comprobar que los datos se procesan correctamente a través de múltiples capas</li>
+                <li>Validar la consistencia de datos entre MongoDB y la API</li>
+            </ul>
+            
+            <h3>Casos de Prueba</h3>
+            
+            <div class="test-card">
+                <div class="test-header">
+                    <span>Endpoint de estado de archivos</span>
+                    <span class="badge badge-success">Exitoso</span>
+                </div>
+                <div class="test-body">
+                    <p>Verifica que el endpoint de estado de archivos responda correctamente.</p>
+                    <ul>
+                        <li>Endpoint: <code>/api/files/status</code></li>
+                        <li>Verificación: Respuesta 200 con estructura adecuada</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="test-card">
+                <div class="test-header">
+                    <span>Cambio de estado de archivo</span>
+                    <span class="badge badge-success">Exitoso</span>
+                </div>
+                <div class="test-body">
+                    <p>Verifica que se pueda cambiar el estado de un archivo a través de la API y que la base de datos se actualice correctamente.</p>
+                    <ul>
+                        <li>Endpoint: <code>/api/files/:id/status</code></li>
+                        <li>Verificación: Cambio persistido en MongoDB</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="test-card">
+                <div class="test-header">
+                    <span>Consistencia entre MongoDB y API</span>
+                    <span class="badge badge-success">Exitoso</span>
+                </div>
+                <div class="test-body">
+                    <p>Verifica que el número de archivos en MongoDB coincida con el reportado por la API.</p>
+                    <ul>
+                        <li>Endpoint: <code>/api/files/metrics</code></li>
+                        <li>Verificación: Conteo de documentos en MongoDB = totalFiles en API</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Pruebas de Roles y Permisos</h2>
+            
+            <p>Las pruebas de roles y permisos validan el sistema de control de acceso, verificando que solo los usuarios autorizados puedan acceder a ciertas funcionalidades.</p>
+            
+            <h3>Objetivos</h3>
+            <ul>
+                <li>Verificar que los roles tengan los permisos adecuados</li>
+                <li>Comprobar que los usuarios solo pueden acceder a los recursos permitidos</li>
+                <li>Validar que la estructura de datos soporte permisos por área y subárea</li>
+            </ul>
+            
+            <h3>Casos de Prueba</h3>
+            
+            <div class="test-card">
+                <div class="test-header">
+                    <span>Acceso como administrador</span>
+                    <span class="badge badge-success">Exitoso</span>
+                </div>
+                <div class="test-body">
+                    <p>Verifica que un usuario con rol de administrador pueda acceder a los endpoints de estado de archivos.</p>
+                    <ul>
+                        <li>Endpoint: <code>/api/files/status</code></li>
+                        <li>Verificación: Acceso permitido (código 200)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="test-card">
+                <div class="test-header">
+                    <span>Modelos compatibles con permisos</span>
+                    <span class="badge badge-success">Exitoso</span>
+                </div>
+                <div class="test-body">
+                    <p>Verifica que los modelos tengan los campos necesarios para soportar el sistema de permisos.</p>
+                    <ul>
+                        <li>Verificación: Campos areaId, subareaId, companyId presentes en modelos File y User</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="test-card">
+                <div class="test-header">
+                    <span>Permisos de archivos</span>
+                    <span class="badge badge-info">Parcial</span>
+                </div>
+                <div class="test-body">
+                    <p>Verifica la existencia de permisos específicos para la gestión de archivos.</p>
+                    <ul>
+                        <li>Verificación: Existencia de permisos file.read, file.write, file.delete</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Interpretación de Resultados</h2>
+            
+            <p>Al ejecutar las pruebas, se generará un informe detallado que muestra:</p>
+            
+            <ul>
+                <li><strong>Resumen general</strong>: Número total de pruebas, pruebas exitosas, pruebas fallidas y tasa de éxito</li>
+                <li><strong>Resultados detallados</strong>: Para cada tipo de prueba, detalles sobre cada caso de prueba</li>
+                <li><strong>Tiempos de ejecución</strong>: Cuánto tardó en ejecutarse cada conjunto de pruebas</li>
+            </ul>
+            
+            <h3>Interpretando Fallos</h3>
+            
+            <p>Cuando una prueba falla, el informe mostrará:</p>
+            
+            <ul>
+                <li>Nombre de la prueba fallida</li>
+                <li>Mensaje de error detallado</li>
+                <li>Datos adicionales relevantes para diagnosticar el problema</li>
+            </ul>
+            
+            <p>Los fallos más comunes suelen ser:</p>
+            
+            <ul>
+                <li><strong>Inconsistencia de estructura</strong>: La estructura de datos no coincide con lo esperado</li>
+                <li><strong>Fallos de conexión</strong>: Problemas al conectar con la base de datos o la API</li>
+                <li><strong>Problemas de permisos</strong>: Problemas con el sistema de roles y permisos</li>
+            </ul>
+        </section>
+        
+        <section>
+            <h2>Ejecución Manual vs Automatizada</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspecto</th>
+                        <th>Pruebas Manuales</th>
+                        <th>Pruebas Automatizadas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Tiempo de ejecución</td>
+                        <td>Minutos a horas</td>
+                        <td>Segundos a minutos</td>
+                    </tr>
+                    <tr>
+                        <td>Consistencia</td>
+                        <td>Variable (depende del tester)</td>
+                        <td>Alta (siempre igual)</td>
+                    </tr>
+                    <tr>
+                        <td>Cobertura</td>
+                        <td>Limitada por tiempo/recursos</td>
+                        <td>Amplia y configurable</td>
+                    </tr>
+                    <tr>
+                        <td>Detección de regresiones</td>
+                        <td>Difícil de mantener</td>
+                        <td>Inmediata con cada ejecución</td>
+                    </tr>
+                    <tr>
+                        <td>Documentación</td>
+                        <td>Requiere esfuerzo adicional</td>
+                        <td>Auto-documentado en código</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p>Las pruebas automatizadas complementan las pruebas manuales, pero no las reemplazan completamente. Ciertas áreas como la experiencia de usuario y la apariencia visual todavía requieren verificación manual.</p>
+        </section>
+        
+        <section>
+            <h2>Próximos Pasos</h2>
+            
+            <p>Para mejorar aún más el sistema de pruebas, se recomiendan los siguientes pasos:</p>
+            
+            <ol>
+                <li><strong>Aumentar cobertura</strong>: Añadir más casos de prueba para cubrir más funcionalidades</li>
+                <li><strong>Pruebas End-to-End</strong>: Implementar pruebas que verifiquen flujos completos de usuario con Cypress o Playwright</li>
+                <li><strong>Integración con CI/CD</strong>: Ejecutar pruebas automáticamente en cada integración de código</li>
+                <li><strong>Pruebas de carga</strong>: Verificar el rendimiento con grandes volúmenes de datos</li>
+                <li><strong>Informes visuales mejorados</strong>: Mejorar los informes de pruebas con gráficos y tendencias</li>
+            </ol>
+            
+            <a href="flujos-prueba-mvp.md" class="btn">Ver guía de flujos de prueba</a>
+        </section>
+        
+        <footer>
+            Excel Manager - Documentación de Pruebas Automatizadas - v1.0
+        </footer>
+    </div>
+</body>
+</html> 

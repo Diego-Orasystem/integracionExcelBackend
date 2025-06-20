@@ -1,0 +1,241 @@
+/* Estilos generales */
+:root {
+  --primary-color: #3f51b5;
+  --secondary-color: #ff4081;
+  --background-color: #f5f5f5;
+  --text-color: #333;
+  --code-bg: #f4f6f8;
+  --code-border: #e0e0e0;
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --danger-color: #f44336;
+  --card-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+.doc-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px;
+  background: white;
+  box-shadow: 0 0 20px rgba(0,0,0,0.05);
+}
+
+h1, h2, h3, h4, h5 {
+  color: var(--primary-color);
+  margin-bottom: 20px;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+pre {
+  background-color: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 4px;
+  padding: 15px;
+  overflow-x: auto;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+code {
+  font-family: 'Consolas', 'Courier New', monospace;
+  background-color: var(--code-bg);
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+/* Header */
+.doc-header {
+  text-align: center;
+  margin-bottom: 50px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #eee;
+}
+
+.doc-header h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.doc-subtitle {
+  font-size: 18px;
+  color: #666;
+}
+
+/* Secciones */
+.doc-section {
+  margin-bottom: 60px;
+}
+
+.doc-section h2 {
+  font-size: 28px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 30px;
+}
+
+/* Tarjetas de componentes */
+.model-card, .service-card, .component-card, .implementation-card {
+  margin-bottom: 30px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+}
+
+.model-card h3, .service-card h3, .component-card h3, .implementation-card h3 {
+  background: var(--primary-color);
+  color: white;
+  padding: 15px;
+  margin: 0;
+}
+
+.model-card p, .service-card p, .component-card p, .implementation-card p {
+  padding: 15px;
+  background: #fafafa;
+  margin: 0;
+}
+
+.code-block {
+  padding: 0;
+  margin: 0;
+}
+
+/* Tablas de API */
+.api-section {
+  margin-bottom: 30px;
+}
+
+.api-section h3 {
+  margin-bottom: 15px;
+}
+
+.api-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  box-shadow: var(--card-shadow);
+}
+
+.api-table th, .api-table td {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+.api-table th {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.api-table tr:nth-child(even) {
+  background-color: #f8f8f8;
+}
+
+.api-table tr:hover {
+  background-color: #f0f0f0;
+}
+
+/* Flujos */
+.auth-flow {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 30px;
+}
+
+.auth-flow ol {
+  padding-left: 20px;
+}
+
+.auth-flow li {
+  margin-bottom: 10px;
+}
+
+/* Mejores prácticas */
+.best-practices {
+  list-style-type: none;
+  padding: 0;
+}
+
+.best-practices li {
+  background: white;
+  margin-bottom: 10px;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: var(--card-shadow);
+  border-left: 4px solid var(--primary-color);
+}
+
+.best-practices li strong {
+  color: var(--primary-color);
+}
+
+/* Footer */
+.doc-footer {
+  text-align: center;
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 1px solid #eee;
+  font-size: 14px;
+  color: #666;
+}
+
+.copyright {
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+/* Estructura del proyecto */
+.code-block pre {
+  white-space: pre;
+  font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .doc-container {
+    padding: 15px;
+  }
+  
+  .doc-header h1 {
+    font-size: 28px;
+  }
+  
+  .doc-section h2 {
+    font-size: 22px;
+  }
+  
+  .api-table {
+    font-size: 14px;
+  }
+  
+  .api-table th, .api-table td {
+    padding: 8px;
+  }
+  
+  .code-block pre {
+    font-size: 12px;
+  }
+} 

@@ -1,0 +1,271 @@
+﻿# DOCUMENTACIÓN DE APIS PARA VISUALIZACIÓN DE ARCHIVOS
+
+## 1. API para métricas y visualización tipo puzzle
+
+**Endpoint:** `GET /api/files/metrics`
+
+**Descripción:** Proporciona datos para la visualización tipo puzzle mostrando tanto archivos existentes como los que faltan según el campo expectedFiles.
+
+**Parámetros:**
+- `timeFrame` (opcional): Período de tiempo para filtrar archivos ('week', 'month' o sin especificar para todos)
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "data": {
+    "stats": {
+      "totalFiles": 25,
+      "pendientes": 5,
+      "procesando": 3,
+      "procesados": 15,
+      "errores": 2,
+      "tamanioPromedio": 1024,
+      "tamanioTotal": 25600
+    },
+    "puzzleItems": [
+      {
+        "_id": "60d21b4667d0d3001d8ecf1a",
+        "name": "Informe-Mensual.xlsx",
+        "status": "procesado",
+        "size": 2048,
+        "folderId": "60d21b4667d0d3001d8ecf1b",
+        "folderName": "Contabilidad",
+        "folderPath": "/Finanzas/Contabilidad",
+        "weight": 1
+      },
+      {
+        "_id": "60d21b4667d0d3001d8ecf1c",
+        "name": "RRHH-Planilla.xlsx", 
+        "status": "pendiente",
+        "weight": 0.6
+      },
+      {
+        "_id": "60a12b4557d0d3221d1ecb2a",
+        "type": "area",
+        "name": "Finanzas",
+        "missingFiles": 3,
+        "expectedFiles": 5,
+        "existingFiles": 2,
+        "isMissingFilesNode": true,
+        "weight": 0.3
+      }
+    ],
+    "areaStats": [
+      {
+        "_id": "60a12b4557d0d3221d1ecb2a",
+        "name": "Finanzas",
+        "type": "area",
+        "existingFiles": 2,
+        "expectedFiles": 5,
+        "missingFiles": 3,
+        "status": "faltante",
+        "completionRate": 0.4
+      }
+    ],
+    "subareaStats": [
+      {
+        "_id": "60d21b4667d0d3001d8ecf1d",
+        "name": "Contabilidad",
+        "type": "subarea",
+        "areaId": "60a12b4557d0d3221d1ecb2a",
+        "areaName": "Finanzas",
+        "folderPath": "/Finanzas/Contabilidad",
+        "existingFiles": 3,
+        "expectedFiles": 5,
+        "missingFiles": 2,
+        "status": "faltante",
+        "completionRate": 0.6
+      }
+    ]
+  }
+}
+```
+
+## 2. API para estadísticas detalladas por áreas y subáreas
+
+**Endpoint:** `GET /api/files/area-stats`
+
+**Descripción:** Proporciona información detallada y jerárquica de archivos esperados vs entregados, organizada por áreas y subáreas.
+
+**Parámetros:** Ninguno
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "data": {
+    "areas": [
+      {
+        "_id": "60a12b4557d0d3221d1ecb2a",
+        "name": "Finanzas",
+        "description": "Área financiera",
+        "color": "#3498db",
+        "icon": "money-bill-wave",
+        "folderId": "60d21b4667d0d3001d8ecf1b",
+        "stats": {
+          "existingFiles": 2,
+          "expectedFiles": 5,
+          "missingFiles": 3,
+          "completionRate": 0.4,
+          "totalSize": 5242880,
+          "lastModified": "2023-05-15T10:30:00Z"
+        },
+        "status": "incompleto",
+        "responsible": {
+          "_id": "60a12b4557d0d3221d1ecb2d",
+          "name": "María López",
+          "email": "maria@empresa.com"
+        },
+        "subareas": [
+          {
+            "_id": "60d21b4667d0d3001d8ecf1d",
+            "name": "Contabilidad",
+            "description": "Gestión contable",
+            "areaId": "60a12b4557d0d3221d1ecb2a",
+            "stats": {
+              "existingFiles": 3,
+              "expectedFiles": 5,
+              "missingFiles": 2,
+              "completionRate": 0.6,
+              "totalSize": 7340032,
+              "lastModified": "2023-05-18T14:20:00Z"
+            },
+            "status": "incompleto",
+            "responsible": {
+              "_id": "60a12b4557d0d3221d1ecb2e",
+              "name": "Carlos Rodríguez",
+              "email": "carlos@empresa.com"
+            }
+          }
+        ]
+      }
+    ],
+    "summary": {
+      "totalAreas": 5,
+      "totalSubareas": 12,
+      "totalExpectedFiles": 45,
+      "totalExistingFiles": 28,
+      "totalMissingFiles": 17,
+      "overallCompletionRate": 0.62
+    }
+  }
+}
+```
+
+## 3. API para datos agregados del estado de archivos
+
+**Endpoint:** `GET /api/files/status`
+
+**Descripción:** Proporciona datos agregados sobre el estado de los archivos, con opciones de agrupación.
+
+**Parámetros:**
+- `groupBy` (opcional): Criterio de agrupación ('folder', 'date', 'type')
+
+**Respuesta para groupBy=folder:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "60d21b4667d0d3001d8ecf1b",
+      "folderName": "Contabilidad",
+      "folderPath": "/Finanzas/Contabilidad",
+      "totalFiles": 10,
+      "pendientes": 2,
+      "procesando": 1,
+      "procesados": 7,
+      "errores": 0,
+      "tamanioTotal": 10485760,
+      "archivos": [
+        {
+          "id": "60d21b4667d0d3001d8ecf1a",
+          "nombre": "Informe-Mensual.xlsx",
+          "estado": "procesado"
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Implementación en el Frontend
+
+### 1. Obtener los datos para el puzzle:
+```javascript
+async function fetchPuzzleData() {
+  try {
+    const response = await fetch('/api/files/metrics');
+    const result = await response.json();
+    if (result.success) {
+      return result.data;
+    }
+  } catch (error) {
+    console.error('Error al obtener datos para puzzle:', error);
+  }
+}
+```
+
+### 2. Mapear los nodos del puzzle:
+```javascript
+function mapPuzzleItems(data) {
+  return data.puzzleItems.map(item => ({
+    id: item._id,
+    label: item.name,
+    value: item.isMissingFilesNode ? item.missingFiles : 1,
+    color: getNodeColor(item),
+    status: item.status,
+    type: item.type || 'file',
+    path: item.folderPath || '',
+    expected: item.expectedFiles,
+    existing: item.existingFiles,
+    isArea: item.type === 'area',
+    isSubarea: item.type === 'subarea',
+    isMissingFilesNode: item.isMissingFilesNode || false
+  }));
+}
+
+function getNodeColor(item) {
+  if (item.isMissingFilesNode) {
+    return '#e74c3c'; // Rojo para archivos faltantes
+  }
+  
+  switch (item.status) {
+    case 'procesado': return '#2ecc71'; // Verde
+    case 'pendiente': return '#e74c3c'; // Rojo
+    case 'procesando': return '#3498db'; // Azul
+    case 'error': return '#f39c12'; // Naranja
+    case 'faltante': return '#e74c3c'; // Rojo
+    default: return '#95a5a6'; // Gris
+  }
+}
+```
+
+### 3. Visualizar las estadísticas por área:
+```javascript
+async function fetchAreaStats() {
+  try {
+    const response = await fetch('/api/files/area-stats');
+    const result = await response.json();
+    if (result.success) {
+      renderAreaStats(result.data);
+    }
+  } catch (error) {
+    console.error('Error al obtener estadísticas por área:', error);
+  }
+}
+
+function renderAreaStats(data) {
+  // Mostrar el porcentaje de completitud general
+  const completionPercentage = Math.floor(data.summary.overallCompletionRate * 100);
+  document.getElementById('overall-completion').textContent = `${completionPercentage}%`;
+  
+  // Renderizar cada área y sus subáreas
+  const areasContainer = document.getElementById('areas-container');
+  areasContainer.innerHTML = '';
+  
+  data.areas.forEach(area => {
+    const areaElement = createAreaElement(area);
+    areasContainer.appendChild(areaElement);
+  });
+} 

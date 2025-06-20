@@ -1,0 +1,301 @@
+# IMPLEMENTACIÓN DE INICIO DE SESIÓN CON CÓDIGO ENVIADO POR EMAIL
+
+## DESCRIPCIÓN GENERAL
+Se ha implementado una funcionalidad que permite iniciar sesión mediante un código de verificación enviado al correo electrónico del usuario. Este enfoque ofrece una capa adicional de seguridad y puede usarse como alternativa al login tradicional con contraseña.
+
+## ENDPOINTS DISPONIBLES
+
+### 1. Solicitar código de verificación
+**Endpoint:** POST /api/auth/request-code
+**Descripción:** Solicita el envío de un código de verificación al correo del usuario.
+**Parámetros:**
+- email: Correo electrónico del usuario (obligatorio)
+
+**Ejemplo de petición:**
+```json
+{
+  "email": "usuario@ejemplo.com"
+}
+```
+
+**Respuesta exitosa (200):**
+```json
+{
+  "success": true,
+  "message": "Código de verificación enviado al correo electrónico"
+}
+```
+
+**Posibles errores:**
+- 400: Correo no proporcionado
+- 404: Usuario no encontrado
+- 401: Usuario inactivo
+- 500: Error del servidor
+
+### 2. Verificar código y realizar login
+**Endpoint:** POST /api/auth/verify-code
+**Descripción:** Verifica el código proporcionado y genera tokens de autenticación.
+**Parámetros:**
+- email: Correo electrónico del usuario (obligatorio)
+- code: Código de verificación recibido por correo (obligatorio)
+
+**Ejemplo de petición:**
+```json
+{
+  "email": "usuario@ejemplo.com",
+  "code": "123456"
+}
+```
+
+**Respuesta exitosa (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+      "id": "5f8d5a7b8e1a2b3c4d5e6f7g",
+      "name": "Nombre Usuario",
+      "email": "usuario@ejemplo.com",
+      "role": "user",
+      "companyId": "5f8d5a7b8e1a2b3c4d5e6f7g",
+      "loginMethod": "email_code"
+    }
+  }
+}
+```
+
+**Posibles errores:**
+- 400: Campos incompletos
+- 404: Usuario no encontrado
+- 401: Usuario inactivo o código inválido/expirado
+- 500: Error del servidor
+
+## CARACTERÍSTICAS DEL CÓDIGO DE VERIFICACIÓN
+- El código consta de 6 dígitos numéricos
+- Tiene una validez de 10 minutos
+- Se envía al correo electrónico registrado del usuario
+- Se almacena de forma segura en la base de datos
+
+## IMPLEMENTACIÓN EN EL FRONTEND
+
+### Flujo de usuario:
+1. El usuario accede a la pantalla de login
+2. Selecciona la opción "Iniciar sesión con código"
+3. Ingresa su correo electrónico
+4. El sistema envía un código al correo
+5. El usuario ingresa el código recibido
+6. Al verificarse el código, se inicia sesión automáticamente
+
+### Ejemplo de implementación:
+
+```jsx
+// LoginWithCode.jsx
+import { useState } from 'react';
+import axios from 'axios';
+
+const LoginWithCode = () => {
+  const [step, setStep] = useState('email'); // 'email' o 'code'
+  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  
+  const handleRequestCode = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    
+    try {
+      await axios.post('/api/auth/request-code', { email });
+      setStep('code');
+    } catch (err) {
+      setError(err.response?.data?.error?.message || 'Error al solicitar código');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleVerifyCode = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    
+    try {
+      const response = await axios.post('/api/auth/verify-code', { 
+        email, 
+        code 
+      });
+      
+      // Guardar token y datos de usuario
+      localStorage.setItem('token', response.data.data.token);
+      localStorage.setItem('refreshToken', response.data.data.refreshToken);
+      localStorage.setItem('user', JSON.stringify(response.data.data.user));
+      
+      // Redireccionar al dashboard
+      window.location.href = '/dashboard';
+    } catch (err) {
+      setError(err.response?.data?.error?.message || 'Código inválido');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleResendCode = () => {
+    handleRequestCode({ preventDefault: () => {} });
+  };
+  
+  return (
+    <div className="login-container">
+      <h2>Iniciar sesión con código</h2>
+      
+      {step === 'email' ? (
+        <form onSubmit={handleRequestCode}>
+          <div className="form-group">
+            <label htmlFor="email">Correo electrónico</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          
+          {error && <div className="error-message">{error}</div>}
+          
+          <button type="submit" disabled={loading} className="btn">
+            {loading ? 'Enviando...' : 'Solicitar código'}
+          </button>
+          
+          <div className="login-options">
+            <a href="/login">Volver al inicio de sesión con contraseña</a>
+          </div>
+        </form>
+      ) : (
+        <form onSubmit={handleVerifyCode}>
+          <div className="form-group">
+            <label htmlFor="code">Código de verificación</label>
+            <input
+              type="text"
+              id="code"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              maxLength={6}
+              placeholder="Ingrese el código de 6 dígitos"
+              required
+            />
+          </div>
+          
+          {error && <div className="error-message">{error}</div>}
+          
+          <button type="submit" disabled={loading} className="btn">
+            {loading ? 'Verificando...' : 'Verificar código'}
+          </button>
+          
+          <div className="login-options">
+            <button 
+              type="button" 
+              onClick={handleResendCode} 
+              className="link-btn"
+              disabled={loading}
+            >
+              Reenviar código
+            </button>
+            <a href="#" onClick={() => setStep('email')}>Cambiar correo</a>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+};
+
+export default LoginWithCode;
+```
+
+## NOTAS IMPORTANTES
+1. El código enviado expira después de 10 minutos por razones de seguridad.
+2. Cada vez que se solicita un nuevo código, el anterior queda invalidado.
+3. En el entorno de desarrollo, los correos se envían a una cuenta de prueba de Ethereal. La URL para ver estos correos aparece en la consola del servidor.
+4. Para el entorno de producción, es necesario configurar las siguientes variables de entorno:
+   - SMTP_HOST: Servidor SMTP
+   - SMTP_PORT: Puerto del servidor SMTP
+   - SMTP_SECURE: true/false para conexión segura
+   - SMTP_USER: Usuario para autenticación SMTP
+   - SMTP_PASS: Contraseña para autenticación SMTP
+   - EMAIL_FROM: Dirección de correo remitente
+   - EMAIL_FROM_NAME: Nombre mostrado como remitente
+
+## CONSIDERACIONES DE SEGURIDAD
+- Limitar los intentos de solicitud de código para prevenir abusos
+- Monitorear patrones inusuales de inicio de sesión
+- Implementar notificaciones para inicios de sesión desde nuevos dispositivos
+- Considerar la implementación de rate limiting para prevenir ataques de fuerza bruta
+
+## EJEMPLO DE IMPLEMENTACIÓN EN DIFERENTES FRAMEWORKS
+
+### Vue.js
+```vue
+<template>
+  <div class="login-container">
+    <h2>Iniciar sesión con código</h2>
+    
+    <form v-if="step === 'email'" @submit.prevent="requestCode">
+      <!-- Formulario de solicitud de código -->
+    </form>
+    
+    <form v-else @submit.prevent="verifyCode">
+      <!-- Formulario de verificación de código -->
+    </form>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      step: 'email',
+      email: '',
+      code: '',
+      loading: false,
+      error: ''
+    }
+  },
+  methods: {
+    async requestCode() {
+      // Lógica similar al ejemplo de React
+    },
+    async verifyCode() {
+      // Lógica similar al ejemplo de React
+    }
+  }
+}
+</script>
+```
+
+### Angular
+```typescript
+@Component({
+  selector: 'app-login-with-code',
+  templateUrl: './login-with-code.component.html',
+  styleUrls: ['./login-with-code.component.css']
+})
+export class LoginWithCodeComponent {
+  step: string = 'email';
+  email: string = '';
+  code: string = '';
+  loading: boolean = false;
+  error: string = '';
+  
+  constructor(private http: HttpClient, private router: Router) {}
+  
+  requestCode(): void {
+    // Lógica similar al ejemplo de React
+  }
+  
+  verifyCode(): void {
+    // Lógica similar al ejemplo de React
+  }
+}
+``` 
