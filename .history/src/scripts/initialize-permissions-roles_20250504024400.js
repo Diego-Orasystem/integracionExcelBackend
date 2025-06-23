@@ -55,7 +55,6 @@ const getOrCreateAdminUser = async () => {
       if (!company) {
         company = await Company.create({
           name: 'Empresa Temporal',
-          emailDomain: 'temp.com',
           description: 'Empresa temporal para inicialización',
           settings: {
             maxStorage: 1024,

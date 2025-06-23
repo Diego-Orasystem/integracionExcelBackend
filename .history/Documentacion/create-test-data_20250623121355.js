@@ -62,7 +62,6 @@ async function createCompanies() {
   
   const globexCompany = await Company.create({
     name: 'Globex Industries',
-    emailDomain: 'globex.com',
     description: 'Empresa secundaria para pruebas',
     active: true,
     settings: {

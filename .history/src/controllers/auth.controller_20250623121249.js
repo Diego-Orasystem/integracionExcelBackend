@@ -495,7 +495,6 @@ exports.initSystem = async (req, res) => {
     // Crear empresa por defecto
     const defaultCompany = await Company.create({
       name: 'Empresa Principal',
-      emailDomain: 'sistema.com',
       description: 'Empresa creada automáticamente durante la inicialización',
       settings: {
         maxStorage: 1024, // 1GB por defecto

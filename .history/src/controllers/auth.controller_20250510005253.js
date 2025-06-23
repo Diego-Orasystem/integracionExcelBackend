@@ -118,7 +118,6 @@ exports.login = async (req, res) => {
       // Crear empresa temporal
       const tempCompany = await Company.create({
         name: 'Empresa Temporal',
-        emailDomain: 'temp.com',
         description: 'Empresa temporal para desarrollo',
         settings: {
           maxStorage: 1024,
@@ -495,7 +494,6 @@ exports.initSystem = async (req, res) => {
     // Crear empresa por defecto
     const defaultCompany = await Company.create({
       name: 'Empresa Principal',
-      emailDomain: 'sistema.com',
       description: 'Empresa creada automáticamente durante la inicialización',
       settings: {
         maxStorage: 1024, // 1GB por defecto
