@@ -1,12 +1,14 @@
 version: '3.8'
 
 services:
-  # Base de datos MongoDB (sin autenticación para inicialización)
+  # Base de datos MongoDB con autenticación
   mongodb:
     image: mongo:7.0
     container_name: excel-manager-mongo
     restart: unless-stopped
     environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-admin123}
       MONGO_INITDB_DATABASE: ${MONGO_DB_NAME:-excelmanager}
     ports:
       - "27017:27017"
@@ -32,12 +34,12 @@ services:
     environment:
       NODE_ENV: production
       PORT: 5000
-      MONGODB_URI: mongodb://mongodb:27017/${MONGO_DB_NAME:-excelmanager}
+      MONGODB_URI: mongodb://admin:${MONGO_ROOT_PASSWORD:-admin123}@mongodb:27017/${MONGO_DB_NAME:-excelmanager}?authSource=admin
       JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-this}
       JWT_EXPIRE: ${JWT_EXPIRE:-24h}
       UPLOAD_PATH: /app/uploads
       MAX_FILE_SIZE: ${MAX_FILE_SIZE:-10}
-      # Configuración SMTP (opcional)
+      # Configuración SMTP
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_SECURE: ${SMTP_SECURE:-false}
@@ -61,7 +63,7 @@ services:
       retries: 3
       start_period: 40s
 
-  # Nginx como proxy reverso (opcional)
+  # Nginx como proxy reverso
   nginx:
     image: nginx:alpine
     container_name: excel-manager-nginx
@@ -77,8 +79,6 @@ services:
       - excel-manager-network
     depends_on:
       - backend
-    profiles:
-      - with-nginx
 
 volumes:
   mongodb_data:

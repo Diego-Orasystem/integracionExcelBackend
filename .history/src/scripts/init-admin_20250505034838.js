@@ -39,7 +39,6 @@ async function initAdmin() {
       console.log('Creando empresa principal...');
       company = await Company.create({
         name: 'Sistema Principal',
-        emailDomain: 'sistema.com',
         description: 'Empresa principal del sistema',
         active: true,
         settings: {
