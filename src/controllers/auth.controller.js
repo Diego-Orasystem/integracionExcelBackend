@@ -166,7 +166,7 @@ exports.login = async (req, res) => {
     }
     // FIN: CÓDIGO TEMPORAL PARA DESARROLLO
 
-    // Si estamos en modo de desarrollo y hay una bandera especial, permitir login sin verificación
+    // Si estamos en modo de desarrollo y hay una bandera especial, permitir login sin verificación ()
     if (process.env.NODE_ENV === 'development' && process.env.EASY_LOGIN === 'true') {
       console.log('⚠️ ADVERTENCIA: Modo de login fácil activado, esto no debe usarse en producción');
       
