@@ -170,7 +170,7 @@ exports.login = async (req, res) => {
     if (process.env.NODE_ENV === 'development' && process.env.EASY_LOGIN === 'true') {
       console.log('⚠️ ADVERTENCIA: Modo de login fácil activado, esto no debe usarse en producción');
       
-      // Buscar usuario por email o usar uno fijo si no existe
+      // Buscar usuario por email o usar uno fijo si no existe()
       let user = await User.findOne({ email });
       
       if (!user) {
