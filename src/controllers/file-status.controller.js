@@ -7,7 +7,7 @@ const asyncHandler = require('../middlewares/async.middleware');
 
 /**
  * @desc    Obtener estado agregado de los archivos
- * @route   GET /api/files/status
+ * @route   GET /api/files/status()
  * @access  Privado
  */
 exports.getFileStatus = async (req, res) => {
