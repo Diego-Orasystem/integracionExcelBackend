@@ -41,6 +41,19 @@ const FileSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  remoteMetadata: {
+    prefix: String,
+    groupName: String,
+    serieName: String,
+    branchCode: String,
+    requiresBranchCode: {
+      type: Boolean,
+      default: false
+    },
+    companyDirectory: String,
+    remoteDirectory: String,
+    remoteFilename: String
+  },
   uploadedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

@@ -1,64 +1,29 @@
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const multer = require('multer');
 const File = require('../models/File');
 const Folder = require('../models/Folder');
+const Company = require('../models/Company');
 const Log = require('../models/Log');
 const { processExcelFile } = require('../services/sftp.service');
+const { getRemoteStorageService, ensureRemoteStorageConnection } = require('../services/remote-storage.service');
 const fileStatusController = require('./file-status.controller');
 const FileVersion = require('../models/FileVersion');
 const Area = require('../models/Area');
 const SubArea = require('../models/SubArea');
+const {
+  buildRemoteDirectoryPath,
+  buildRemoteFilePath,
+  buildRemoteFilename,
+  deriveCompanyDirectory,
+  deriveCompanyPrefix,
+  sanitizeSegment
+} = require('../utils/remote-file.util');
+const { appendMetadataEntries } = require('../services/metadata.service');
 
-// Configuración de multer para carga de archivos
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = process.env.UPLOAD_PATH || './uploads';
-    console.log('Directorio base de uploads:', uploadDir);
-    
-    const companyDir = path.join(uploadDir, req.user.companyId.toString());
-    console.log('Directorio para la empresa:', companyDir);
-    
-    // Crear directorio si no existe
-    if (!fs.existsSync(companyDir)) {
-      console.log('Creando directorio de empresa ya que no existe');
-      try {
-        fs.mkdirSync(companyDir, { recursive: true });
-        console.log('Directorio creado con éxito');
-      } catch (dirError) {
-        console.error('Error al crear directorio:', dirError);
-        // Asegurarse de que el error se propague correctamente
-        return cb(new Error(`No se pudo crear el directorio: ${dirError.message}`));
-      }
-    } else {
-      console.log('El directorio de empresa ya existe');
-      
-      // Verificar permisos de escritura
-      try {
-        fs.accessSync(companyDir, fs.constants.W_OK);
-        console.log('El directorio tiene permisos de escritura');
-      } catch (accessError) {
-        console.error('ERROR: El directorio no tiene permisos de escritura');
-        return cb(new Error(`No hay permisos de escritura: ${accessError.message}`));
-      }
-    }
-    
-    cb(null, companyDir);
-  },
-  filename: function (req, file, cb) {
-    // Generar nombre único
-    const timestamp = Date.now();
-    const originalname = file.originalname;
-    const extension = path.extname(originalname);
-    const basename = path.basename(originalname, extension);
-    const uniqueFilename = `${basename}_${timestamp}${extension}`;
-    
-    console.log('Nombre original:', originalname);
-    console.log('Nombre único generado:', uniqueFilename);
-    
-    cb(null, uniqueFilename);
-  }
-});
+// Configuración de multer para carga de archivos (usar memoria para luego subir al servidor remoto)
+const storage = multer.memoryStorage();
 
 // Filtro para aceptar solo archivos Excel
 const fileFilter = (req, file, cb) => {
@@ -115,6 +80,15 @@ const handleUploadError = (err, req, res, next) => {
   next();
 };
 
+const parseBoolean = (value) => {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number') return value === 1;
+  if (typeof value === 'string') {
+    return ['true', '1', 'yes', 'si', 'sí', 'on'].includes(value.toLowerCase());
+  }
+  return false;
+};
+
 // @desc    Subir archivo
 // @route   POST /api/files/upload
 // @access  Privado
@@ -164,10 +138,6 @@ exports.uploadFile = [
       
       if (!folder) {
         console.error('Error: Carpeta no encontrada o sin acceso');
-        // Eliminar el archivo subido
-        fs.unlinkSync(req.file.path);
-        console.log('Archivo eliminado:', req.file.path);
-        
         return res.status(404).json({
           success: false,
           error: {
@@ -179,11 +149,39 @@ exports.uploadFile = [
       
       console.log('Carpeta encontrada:', folder.name, folder._id);
       
+      const company = await Company.findById(req.user.companyId);
+      if (!company) {
+        console.error('Error: Compañía no encontrada para el usuario');
+        return res.status(404).json({
+          success: false,
+          error: {
+            code: 'COMPANY_NOT_FOUND',
+            message: 'La compañía asociada al usuario no existe'
+          }
+        });
+      }
+      
+      // Guardar archivo temporalmente para procesarlo
+      const tempDir = path.join(os.tmpdir(), 'excel-uploads');
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+      }
+
+      const timestamp = Date.now();
+      const extension = path.extname(req.file.originalname);
+      const basename = path.basename(req.file.originalname, extension);
+      const tempFilename = `${basename}_${timestamp}${extension}`;
+      const tempFilePath = path.join(tempDir, tempFilename);
+
+      // Escribir archivo temporal desde buffer
+      fs.writeFileSync(tempFilePath, req.file.buffer);
+      console.log('Archivo temporal creado:', tempFilePath);
+      
       // Analizar el archivo Excel para extraer metadatos
-      console.log('Procesando archivo Excel:', req.file.path);
+      console.log('Procesando archivo Excel:', tempFilePath);
       try {
-        const metadata = await processExcelFile(req.file.path);
-        console.log('Metadatos extraídos:', metadata);
+        const fileMetadata = await processExcelFile(tempFilePath);
+        console.log('Metadatos extraídos:', fileMetadata);
         
         // Validar el estado inicial si se proporciona
         let status = 'pendiente';  // Estado por defecto
@@ -209,6 +207,114 @@ exports.uploadFile = [
           }
         }
         
+        // Determinar ruta de almacenamiento (remoto o local)
+        // Intentar reconectar si no está conectado
+        let remoteStorageService = await ensureRemoteStorageConnection();
+        if (!remoteStorageService) {
+          remoteStorageService = getRemoteStorageService();
+        }
+
+        const prefixInput = req.body.prefijo || req.body.prefix || req.body.filePrefix;
+        const groupNameInput = req.body.groupName || req.body.group || req.body.group_name;
+        const serieNameInput = req.body.serieName || req.body.seriesName || req.body.serie_name;
+        const branchCodeInput = req.body.branchCode || req.body.branch_code;
+        const requiresBranchCodeFlag = parseBoolean(req.body.requiresBranchCode || req.body.usesBranchCode);
+
+        const derivedPrefix = deriveCompanyPrefix(company, prefixInput);
+        const resolvedGroupName = groupNameInput || folder.name || derivedPrefix;
+        const resolvedSerieName = serieNameInput || resolvedGroupName;
+        const sanitizedGroupName = sanitizeSegment(resolvedGroupName, { maxLength: 80 });
+        const sanitizedSerieName = sanitizeSegment(resolvedSerieName, { maxLength: 80 });
+        const sanitizedBranchCode = branchCodeInput ? sanitizeSegment(branchCodeInput, { maxLength: 40 }) : '';
+        const requiresBranchCode = requiresBranchCodeFlag || Boolean(sanitizedBranchCode);
+        const companyDirectory = deriveCompanyDirectory(company, derivedPrefix);
+        const remoteBaseDir = process.env.REMOTE_STORAGE_ROOT_DIR || '/lek-files';
+        const remoteDirectory = buildRemoteDirectoryPath({
+          baseDir: remoteBaseDir,
+          companyDir: companyDirectory,
+          subdirectories: ['forecast-files', 'excel']
+        });
+        const remoteFilename = buildRemoteFilename({
+          prefix: derivedPrefix,
+          groupName: sanitizedGroupName,
+          serieName: sanitizedSerieName,
+          branchCode: sanitizedBranchCode,
+          extension,
+          useBranchCode: requiresBranchCode
+        });
+        const remoteFilePath = buildRemoteFilePath({
+          baseDir: remoteBaseDir,
+          companyDir: companyDirectory,
+          subdirectories: ['forecast-files', 'excel'],
+          filename: remoteFilename
+        });
+
+        let storageLocation;
+        let appliedRemoteMetadata = null;
+
+        if (remoteStorageService && remoteStorageService.isConnected()) {
+          console.log('📤 Preparando subida al servidor remoto:');
+          console.log('   Ruta remota generada:', remoteFilePath);
+          console.log('   Nombre del archivo:', remoteFilename);
+          console.log('   Directorio de la compañía:', companyDirectory);
+          try {
+            storageLocation = await remoteStorageService.uploadFile(tempFilePath, remoteFilePath);
+            appliedRemoteMetadata = {
+              prefix: derivedPrefix,
+              groupName: sanitizedGroupName,
+              serieName: sanitizedSerieName,
+              branchCode: sanitizedBranchCode,
+              requiresBranchCode,
+              companyDirectory,
+              remoteDirectory,
+              remoteFilename
+            };
+            console.log('✅ Archivo guardado en servidor remoto:', storageLocation);
+            fs.unlinkSync(tempFilePath);
+
+            try {
+              await appendMetadataEntries(remoteStorageService, {
+                prefix: derivedPrefix,
+                groupName: sanitizedGroupName,
+                serieName: sanitizedSerieName,
+                branchCode: sanitizedBranchCode,
+                remoteFilePath: storageLocation,
+                user: req.user,
+                company
+              });
+            } catch (metadataError) {
+              console.warn('⚠️  No se pudo actualizar metadata CUE:', metadataError.message);
+            }
+          } catch (uploadError) {
+            console.error('❌ Error subiendo al servidor remoto, usando almacenamiento local:', uploadError);
+            const uploadDir = process.env.UPLOAD_PATH || './uploads';
+            const companyDir = path.join(uploadDir, req.user.companyId.toString());
+            if (!fs.existsSync(companyDir)) {
+              fs.mkdirSync(companyDir, { recursive: true });
+            }
+            storageLocation = path.join(companyDir, tempFilename);
+            fs.renameSync(tempFilePath, storageLocation);
+            storageLocation = path.normalize(storageLocation);
+            console.log('⚠️  Archivo guardado localmente (fallback):', storageLocation);
+          }
+        } else {
+          // Fallback: guardar localmente si no hay servidor remoto
+          const uploadDir = process.env.UPLOAD_PATH || './uploads';
+          const companyDir = path.join(uploadDir, req.user.companyId.toString());
+          if (!fs.existsSync(companyDir)) {
+            fs.mkdirSync(companyDir, { recursive: true });
+          }
+          storageLocation = path.join(companyDir, tempFilename);
+          fs.renameSync(tempFilePath, storageLocation);
+          storageLocation = path.normalize(storageLocation);
+          console.log('⚠️  Archivo guardado localmente (sin servidor remoto):', storageLocation);
+        }
+        
+        // Normalizar la ruta de almacenamiento antes de guardarla en la BD
+        if (storageLocation && !storageLocation.startsWith('/')) {
+          storageLocation = path.normalize(storageLocation);
+        }
+        
         // Crear el registro del archivo
         console.log('Creando registro de archivo en la base de datos con datos:');
         const fileData = {
@@ -219,27 +325,20 @@ exports.uploadFile = [
           companyId: req.user.companyId,
           size: req.file.size,
           mimeType: req.file.mimetype,
-          extension: path.extname(req.file.originalname),
-          storageLocation: req.file.path,
+          extension: extension,
+          storageLocation: storageLocation,
           uploadedBy: req.user._id,
           uploadType: 'manual',
           status,
           processingDetails,
-          metadata,
-          tags: tags ? tags.split(',').map(tag => tag.trim()) : []
+          metadata: fileMetadata,
+          tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
+          remoteMetadata: appliedRemoteMetadata
         };
         console.log(fileData);
         
         const newFile = await File.create(fileData);
         console.log('Archivo guardado en la base de datos con ID:', newFile._id);
-        
-        // Verificar que el archivo existe físicamente después de guardar
-        if (fs.existsSync(req.file.path)) {
-          const fileStats = fs.statSync(req.file.path);
-          console.log(`Verificación: El archivo existe en disco (tamaño: ${fileStats.size} bytes)`);
-        } else {
-          console.error('ADVERTENCIA: El archivo no está en la ubicación esperada después de guardarlo');
-        }
         
         // Registrar log
         await Log.create({
@@ -252,7 +351,8 @@ exports.uploadFile = [
             path: folder.path,
             fileSize: req.file.size,
             fileName: req.file.originalname,
-            status: newFile.status
+            status: newFile.status,
+            storageType: appliedRemoteMetadata ? 'remote' : 'local'
           }
         });
         
@@ -268,28 +368,29 @@ exports.uploadFile = [
             mimeType: newFile.mimeType,
             status: newFile.status,
             metadata: newFile.metadata,
+            remoteMetadata: newFile.remoteMetadata,
             createdAt: newFile.createdAt
           }
         });
       } catch (processError) {
         console.error('Error procesando archivo Excel:', processError);
-        // Eliminar el archivo si hay error en el procesamiento
-        if (fs.existsSync(req.file.path)) {
-          fs.unlinkSync(req.file.path);
-          console.log('Archivo eliminado por error de procesamiento:', req.file.path);
+        // Eliminar el archivo temporal si hay error en el procesamiento
+        if (tempFilePath && fs.existsSync(tempFilePath)) {
+          fs.unlinkSync(tempFilePath);
+          console.log('Archivo temporal eliminado por error de procesamiento:', tempFilePath);
         }
         throw processError;
       }
     } catch (error) {
       console.error('Error en uploadFile:', error);
       
-      // Intentar eliminar el archivo si hubo un error y el archivo existe
-      if (req.file && fs.existsSync(req.file.path)) {
+      // Intentar eliminar el archivo temporal si hubo un error
+      if (tempFilePath && fs.existsSync(tempFilePath)) {
         try {
-          fs.unlinkSync(req.file.path);
-          console.log('Archivo eliminado debido a error:', req.file.path);
+          fs.unlinkSync(tempFilePath);
+          console.log('Archivo temporal eliminado debido a error:', tempFilePath);
         } catch (unlinkError) {
-          console.error('Error al eliminar el archivo:', unlinkError);
+          console.error('Error al eliminar el archivo temporal:', unlinkError);
         }
       }
       
@@ -376,7 +477,7 @@ exports.listFiles = async (req, res) => {
       
       // Obtener archivos paginados
       const files = await File.find(filter)
-        .select('name originalName size mimeType extension metadata tags createdAt updatedAt')
+        .select('name originalName size mimeType extension metadata tags remoteMetadata createdAt updatedAt')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
@@ -677,15 +778,89 @@ exports.downloadFile = async (req, res) => {
       });
     }
     
-    // Verificar que el archivo existe en el sistema de archivos
-    if (!fs.existsSync(file.storageLocation)) {
-      return res.status(404).json({
-        success: false,
-        error: {
-          code: 'FILE_NOT_FOUND',
-          message: 'El archivo no existe en el sistema'
+    // Determinar si el archivo está en servidor remoto o local
+    // Intentar reconectar si no está conectado
+    let remoteStorageService = await ensureRemoteStorageConnection();
+    if (!remoteStorageService) {
+      remoteStorageService = getRemoteStorageService();
+    }
+    const remoteRoot = process.env.REMOTE_STORAGE_ROOT_DIR || '/uploads';
+    const normalizedStorageLocation = (file.storageLocation || '').replace(/\\/g, '/');
+    const isRemotePath = normalizedStorageLocation.startsWith(remoteRoot) ||
+      normalizedStorageLocation.includes('/lek-files/');
+    
+    console.log('=== INFORMACIÓN DE DESCARGA ===');
+    console.log('Archivo ID:', file._id);
+    console.log('Storage Location:', file.storageLocation);
+    console.log('Remote Root:', remoteRoot);
+    console.log('Es ruta remota?', isRemotePath);
+    console.log('Servidor SFTP conectado?', remoteStorageService && remoteStorageService.isConnected());
+    
+    let filePath = file.storageLocation;
+    
+    // Si está en servidor remoto, descargarlo temporalmente
+    if (remoteStorageService && remoteStorageService.isConnected() && isRemotePath) {
+      console.log('Intentando descargar desde servidor remoto...');
+      try {
+        const tempDir = path.join(os.tmpdir(), 'file-downloads');
+        if (!fs.existsSync(tempDir)) {
+          fs.mkdirSync(tempDir, { recursive: true });
         }
-      });
+        
+        const tempFilePath = path.join(tempDir, `download_${Date.now()}_${file.originalName}`);
+        await remoteStorageService.downloadFile(file.storageLocation, tempFilePath);
+        filePath = tempFilePath;
+        console.log('Archivo descargado del servidor remoto a:', tempFilePath);
+      } catch (downloadError) {
+        console.error('❌ Error descargando del servidor remoto:', downloadError);
+        console.error('   Ruta intentada:', file.storageLocation);
+        console.error('   Stack:', downloadError.stack);
+        return res.status(500).json({
+          success: false,
+          error: {
+            code: 'DOWNLOAD_ERROR',
+            message: 'Error al descargar archivo del servidor remoto: ' + downloadError.message
+          }
+        });
+      }
+    } else {
+      console.log('Buscando archivo localmente...');
+      // Normalizar la ruta antes de verificar
+      filePath = path.normalize(filePath);
+      console.log('Ruta normalizada:', filePath);
+      
+      // Verificar que el archivo existe localmente
+      if (!fs.existsSync(filePath)) {
+        console.error('❌ Archivo no encontrado localmente en:', filePath);
+        // Intentar con ruta absoluta si es relativa
+        if (!path.isAbsolute(filePath)) {
+          const uploadDir = process.env.UPLOAD_PATH || './uploads';
+          const absolutePath = path.join(path.resolve(uploadDir), filePath);
+          console.log('Intentando con ruta absoluta:', absolutePath);
+          if (fs.existsSync(absolutePath)) {
+            filePath = absolutePath;
+            console.log('✅ Archivo encontrado en ruta absoluta');
+          } else {
+            return res.status(404).json({
+              success: false,
+              error: {
+                code: 'FILE_NOT_FOUND',
+                message: `El archivo no existe en el sistema. Ruta intentada: ${filePath}`
+              }
+            });
+          }
+        } else {
+          return res.status(404).json({
+            success: false,
+            error: {
+              code: 'FILE_NOT_FOUND',
+              message: `El archivo no existe en el sistema. Ruta intentada: ${filePath}`
+            }
+          });
+        }
+      } else {
+        console.log('✅ Archivo encontrado localmente');
+      }
     }
     
     // Registrar log de descarga
@@ -697,14 +872,24 @@ exports.downloadFile = async (req, res) => {
       entityId: file._id,
       details: {
         fileName: file.name,
-        fileSize: file.size
+        fileSize: file.size,
+        storageType: isRemotePath ? 'remote' : 'local'
       }
     });
     
     // Enviar archivo
-    res.download(file.storageLocation, file.originalName, (err) => {
+    res.download(filePath, file.originalName, (err) => {
       if (err) {
         console.error('Error al descargar archivo:', err);
+      }
+      // Limpiar archivo temporal si se descargó del servidor remoto
+      if (filePath !== file.storageLocation && fs.existsSync(filePath)) {
+        try {
+          fs.unlinkSync(filePath);
+          console.log('Archivo temporal eliminado:', filePath);
+        } catch (cleanupError) {
+          console.error('Error eliminando archivo temporal:', cleanupError);
+        }
       }
     });
   } catch (error) {
@@ -746,9 +931,30 @@ exports.deleteFile = async (req, res) => {
       });
     }
     
-    // Eliminar archivo del sistema de archivos
-    if (fs.existsSync(file.storageLocation)) {
-      fs.unlinkSync(file.storageLocation);
+    // Eliminar archivo del sistema de archivos (remoto o local)
+    // Intentar reconectar si no está conectado
+    let remoteStorageService = await ensureRemoteStorageConnection();
+    if (!remoteStorageService) {
+      remoteStorageService = getRemoteStorageService();
+    }
+    const remoteRoot = process.env.REMOTE_STORAGE_ROOT_DIR || '/uploads';
+    const normalizedStorageLocation = (file.storageLocation || '').replace(/\\/g, '/');
+    const isRemotePath = normalizedStorageLocation.startsWith(remoteRoot) || normalizedStorageLocation.includes('/lek-files/');
+    
+    if (remoteStorageService && remoteStorageService.isConnected() && isRemotePath) {
+      try {
+        await remoteStorageService.deleteFile(file.storageLocation);
+        console.log('Archivo eliminado del servidor remoto:', file.storageLocation);
+      } catch (deleteError) {
+        console.error('Error eliminando archivo del servidor remoto:', deleteError);
+        // Continuar con la eliminación del registro aunque falle la eliminación física
+      }
+    } else {
+      // Eliminar archivo local
+      if (fs.existsSync(file.storageLocation)) {
+        fs.unlinkSync(file.storageLocation);
+        console.log('Archivo eliminado localmente:', file.storageLocation);
+      }
     }
     
     // Registrar log
@@ -840,7 +1046,7 @@ exports.searchFiles = async (req, res) => {
     
     // Obtener archivos paginados
     const files = await File.find(filter)
-      .select('name originalName size mimeType extension metadata tags createdAt updatedAt')
+      .select('name originalName size mimeType extension metadata tags remoteMetadata createdAt updatedAt')
       .populate('folderId', 'name path')
       .populate('companyId', 'name') // Añadir info de la compañía
       .sort({ createdAt: -1 })
@@ -919,7 +1125,7 @@ exports.getFilesByMimeType = async (req, res) => {
     
     // Obtener archivos paginados
     const files = await File.find(filter)
-      .select('name originalName size mimeType extension metadata createdAt')
+      .select('name originalName size mimeType extension metadata remoteMetadata createdAt')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -1071,6 +1277,209 @@ exports.createTestVersion = async (req, res) => {
       error: {
         code: 'SERVER_ERROR',
         message: 'Error al crear versión de prueba',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      }
+    });
+  }
+};
+
+// @desc    Diagnóstico de archivos - Verificar dónde se guardan y si existen
+// @route   GET /api/files/diagnose
+// @access  Público (sin autenticación)
+exports.diagnoseFiles = async (req, res) => {
+  try {
+    const File = require('../models/File');
+    const { getRemoteStorageService, ensureRemoteStorageConnection } = require('../services/remote-storage.service');
+    
+    // Obtener configuración
+    const uploadDir = process.env.UPLOAD_PATH || './uploads';
+    const absoluteUploadDir = path.resolve(uploadDir);
+    const remoteRoot = process.env.REMOTE_STORAGE_ROOT_DIR || '/uploads';
+    
+    // Verificar estado del almacenamiento remoto
+    let remoteStorageService = await ensureRemoteStorageConnection();
+    if (!remoteStorageService) {
+      remoteStorageService = getRemoteStorageService();
+    }
+    
+    const remoteStorageConnected = remoteStorageService && remoteStorageService.isConnected();
+    const remoteStorageConfig = {
+      host: process.env.REMOTE_STORAGE_HOST,
+      port: process.env.REMOTE_STORAGE_PORT || 22,
+      rootDirectory: remoteRoot,
+      connected: remoteStorageConnected
+    };
+    
+    // Obtener archivos recientes (todos, sin filtrar por compañía)
+    const recentFiles = await File.find({})
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .select('_id name storageLocation size createdAt companyId');
+    
+    // Verificar cada archivo
+    const fileDiagnostics = await Promise.all(recentFiles.map(async (file) => {
+      // Normalizar la ruta leída de la BD
+      let storageLocation = file.storageLocation;
+      if (storageLocation) {
+        storageLocation = path.normalize(storageLocation);
+      }
+      
+      const normalizedStorage = (storageLocation || '').replace(/\\/g, '/');
+      const isRemotePath = normalizedStorage.startsWith(remoteRoot) ||
+                           normalizedStorage.includes('/lek-files/');
+      
+      let exists = false;
+      let existsError = null;
+      let storageType = isRemotePath ? 'remote' : 'local';
+      
+      if (isRemotePath && remoteStorageConnected) {
+        // Verificar en servidor remoto
+        try {
+          exists = await remoteStorageService.fileExists(storageLocation);
+        } catch (error) {
+          existsError = error.message;
+        }
+      } else if (!isRemotePath) {
+        // Verificar localmente
+        try {
+          // Intentar con la ruta normalizada
+          exists = fs.existsSync(storageLocation);
+          if (!exists) {
+            // Intentar con ruta absoluta si es relativa
+            const uploadDir = process.env.UPLOAD_PATH || './uploads';
+            const absolutePath = path.isAbsolute(storageLocation) 
+              ? storageLocation 
+              : path.join(path.resolve(uploadDir), storageLocation);
+            exists = fs.existsSync(absolutePath);
+            if (exists) {
+              storageLocation = absolutePath;
+            }
+          }
+          if (exists) {
+            const stats = fs.statSync(storageLocation);
+            exists = stats.isFile();
+          }
+        } catch (error) {
+          existsError = error.message;
+        }
+      } else {
+        existsError = 'Servidor remoto no conectado';
+      }
+      
+      return {
+        _id: file._id,
+        name: file.name,
+        storageLocation,
+        storageType,
+        exists,
+        existsError,
+        size: file.size,
+        companyId: file.companyId,
+        createdAt: file.createdAt
+      };
+    }));
+    
+    // Verificar directorio local
+    const localDirExists = fs.existsSync(absoluteUploadDir);
+    
+    let allLocalFiles = [];
+    let companyDirs = [];
+    
+    if (localDirExists) {
+      try {
+        // Listar todos los directorios de compañías
+        const entries = fs.readdirSync(absoluteUploadDir, { withFileTypes: true });
+        companyDirs = entries
+          .filter(entry => entry.isDirectory())
+          .map(entry => entry.name);
+        
+        // Listar archivos en el directorio raíz
+        allLocalFiles = entries
+          .filter(entry => entry.isFile())
+          .map(entry => entry.name)
+          .slice(0, 20);
+      } catch (error) {
+        // Ignorar error
+      }
+    }
+    
+    // Estadísticas generales
+    const totalFiles = await File.countDocuments({});
+    const filesInDB = await File.find({}).select('storageLocation').limit(100); // Limitar para no sobrecargar
+    
+    let remoteFilesCount = 0;
+    let localFilesCount = 0;
+    let missingFilesCount = 0;
+    
+    for (const file of filesInDB) {
+      // Normalizar la ruta leída de la BD
+      let storageLocation = file.storageLocation;
+      if (storageLocation) {
+        storageLocation = path.normalize(storageLocation);
+      }
+      
+      const normalizedStorage = (storageLocation || '').replace(/\\/g, '/');
+      const isRemote = normalizedStorage.startsWith(remoteRoot) ||
+                       normalizedStorage.includes('/lek-files/');
+      
+      if (isRemote) {
+        remoteFilesCount++;
+        if (remoteStorageConnected) {
+          try {
+            const exists = await remoteStorageService.fileExists(storageLocation);
+            if (!exists) missingFilesCount++;
+          } catch (error) {
+            missingFilesCount++;
+          }
+        }
+      } else {
+        localFilesCount++;
+        // Intentar verificar con ruta normalizada
+        let fileExists = fs.existsSync(storageLocation);
+        if (!fileExists && !path.isAbsolute(storageLocation)) {
+          // Intentar con ruta absoluta
+          const uploadDir = process.env.UPLOAD_PATH || './uploads';
+          const absolutePath = path.join(path.resolve(uploadDir), storageLocation);
+          fileExists = fs.existsSync(absolutePath);
+        }
+        if (!fileExists) {
+          missingFilesCount++;
+        }
+      }
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: {
+        configuration: {
+          uploadDir,
+          absoluteUploadDir,
+          remoteRoot,
+          remoteStorage: remoteStorageConfig
+        },
+        directories: {
+          localDirExists,
+          companyDirs: companyDirs.slice(0, 20), // Limitar a 20 directorios
+          localFilesCount: allLocalFiles.length,
+          localFiles: allLocalFiles
+        },
+        statistics: {
+          totalFilesInDB: totalFiles,
+          remoteFilesCount,
+          localFilesCount,
+          missingFilesCount,
+          checkedFiles: filesInDB.length
+        },
+        recentFiles: fileDiagnostics
+      }
+    });
+  } catch (error) {
+    console.error('Error en diagnoseFiles:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'SERVER_ERROR',
+        message: 'Error al diagnosticar archivos',
         details: process.env.NODE_ENV === 'development' ? error.message : undefined
       }
     });

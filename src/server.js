@@ -3,10 +3,27 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
-require('dotenv').config();
+const dotenv = require('dotenv');
+
+// Cargar variables de entorno desde los archivos disponibles
+const projectRoot = path.resolve(__dirname, '..');
+const envCandidates = [
+  path.join(projectRoot, '.env'),
+  process.env.NODE_ENV === 'production'
+    ? path.join(projectRoot, 'env.production')
+    : path.join(projectRoot, 'env.ejemplo')
+];
+
+envCandidates
+  .filter((envPath, index, self) => self.indexOf(envPath) === index && fs.existsSync(envPath))
+  .forEach(envPath => {
+    dotenv.config({ path: envPath, override: false });
+    console.log(`🔐 Variables de entorno cargadas desde ${path.basename(envPath)}`);
+  });
 
 // Importar servicios
 require('./services/email.service'); // Inicializar servicio de correo
+const { initializeRemoteStorage } = require('./services/remote-storage.service');
 
 // Importar rutas
 const authRoutes = require('./routes/auth.routes');
@@ -130,13 +147,33 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Configuración de MongoDB
+const MONGODB_URI = process.env.MONGODB_URI ||
+  'mongodb+srv://diegodiaz:Admin123.@fits.hov3igz.mongodb.net/excel-manager?retryWrites=true&w=majority&appName=Fits';
+
+console.log(`🔌 Intentando conectar a MongoDB con URI: ${MONGODB_URI}`);
+
 // Conectar a MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
+mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => {
-  console.log('Conectado a MongoDB');
+.then(async () => {
+  console.log(`Conectado a MongoDB (${MONGODB_URI})`);
+  
+  // Inicializar almacenamiento remoto
+  try {
+    const remoteStorage = await initializeRemoteStorage();
+    if (remoteStorage) {
+      console.log('✅ Almacenamiento remoto configurado correctamente');
+    } else {
+      console.log('⚠️  Usando almacenamiento local (fallback)');
+    }
+  } catch (error) {
+    console.error('❌ Error inicializando almacenamiento remoto:', error);
+    console.log('⚠️  Continuando con almacenamiento local');
+  }
+  
   // Iniciar el servidor después de conectar a la base de datos
   app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);

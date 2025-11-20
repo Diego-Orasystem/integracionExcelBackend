@@ -26,6 +26,16 @@ const FileVersionSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: [true, 'Se debe especificar quién subió esta versión']
+  },
+  metadata: {
+    prefix: String,
+    groupName: String,
+    serieName: String,
+    branchCode: String,
+    requiresBranchCode: Boolean,
+    companyDirectory: String,
+    remoteDirectory: String,
+    remoteFilename: String
   }
 }, {
   timestamps: true
